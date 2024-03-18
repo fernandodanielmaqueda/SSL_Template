@@ -1,0 +1,7 @@
+*.exe
+*.out
+*.o
+*.s
+*.i
+*.d
+*.d.timestamp
