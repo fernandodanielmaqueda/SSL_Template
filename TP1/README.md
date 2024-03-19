@@ -1,5 +1,5 @@
-# TP1: Analizador léxico en C
+# TP1
+## Autómata Finito Determinístico para Constantes Enteras de C
 
-### Puntos a considerar para la corrección
-
-***Supuestos y decisiones que tomaron al momento de realizar el trabajo práctico***
+### Comentarios a considerar para la corrección del trabajo
+*Supuestos, decisiones y observaciones en relación con el trabajo práctico realizado*

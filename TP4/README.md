@@ -1,5 +1,5 @@
-# TP1: Analizador léxico en C
+# TP4: Trabajo Práctico Integrador (TPI)
+## Analizador léxico, sintáctico y semántico de C
 
-### Puntos a considerar para la corrección
-
-***Observaciones para que el tutor designado tenga en cuenta en el momento de la corrección***
+### Comentarios a considerar para la corrección del trabajo
+*Supuestos, decisiones y observaciones en relación con el trabajo práctico realizado*
