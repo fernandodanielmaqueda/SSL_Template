@@ -1,0 +1,24 @@
+{
+	"settings": {
+		"debug.onTaskErrors": "abort",
+		"files.associations": {
+			"*.h": "c",
+			"functional": "c"
+		},
+		"C_Cpp.errorSquiggles": "disabled",
+	},
+	"folders": [
+		{
+			"path": "TP1"
+		},
+		{
+			"path": "TP2"
+		},
+		{
+			"path": "TP3"
+		},
+		{
+			"path": "TP4"
+		}
+	]
+}
