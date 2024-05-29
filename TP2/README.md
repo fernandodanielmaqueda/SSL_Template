@@ -5,6 +5,9 @@
 - **Estándar de C utilizado**:
 - **Compilador de C utilizado**: gcc
 - **Versión mínima del compilador de C utilizada**:
-- **Versión de *flex* mínima necesaria**:
-- **Versión de *bison* mínima necesaria**:
+- **Versión mínima de *flex* necesaria**:
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
+```bash
+make all
+make run-tp2
+```
