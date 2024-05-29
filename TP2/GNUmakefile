@@ -16,9 +16,9 @@ BIN_PROGRAMS+=$(program1)
 
 # Executing the program with this makefile.
 #   The arguments to pass to the program.
-$(program1)_ARGS:=
+$(program1)_ARGS:=archivo.c
 #   The working directory for the program. Alternatively, it can be left empty to use the current directory.
-$(program1)_CWD:=$(BINDIR)
+$(program1)_CWD:=
 
 #   Subdirectory to search for source files for the program. Alternatively, it can be left empty to use the current directory. By default: src/
 $(program1)_SRCDIR:=src/
