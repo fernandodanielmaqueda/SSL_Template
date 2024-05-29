@@ -5,6 +5,10 @@
 !.vscode/settings.json
 !.vscode/tasks.json
 
+# Generated folders
+.deps/
+obj/
+
 # Prerequisites
 *.d
 *.d.timestamp
