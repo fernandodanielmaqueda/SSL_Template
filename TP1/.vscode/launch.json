@@ -42,6 +42,26 @@
         }
       ],
       "preLaunchTask": "make bin/tp1.exe"
+    },
+    {
+      "name": "(gdb) Launch bin/tp1.exe",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/tp1.exe",
+      "args": [],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}/bin",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "make bin/tp1.exe"
     }
   ]
 }

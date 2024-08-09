@@ -299,33 +299,6 @@
         "panel": "new"
       },
       "problemMatcher": []
-    },
-    {
-      "label": "make valgrind-helgrind-tp4",
-      "dependsOn": "",
-      "hide": true,
-      "icon": {"id": "debug"},
-      "isBackground": false,
-      "promptOnClose": false,
-      "detail": "Ejecutar en esta misma ventana Valgrind con la herramienta helgrind sobre el programa tp4",
-      "command": "make valgrind-helgrind-tp4",
-      "args": [],
-      "runOptions": {},
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {},
-        "shell": {}
-      },
-      "group": {
-        "kind": "none",
-        "isDefault": false
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "problemMatcher": []
     }
   ]
 }
