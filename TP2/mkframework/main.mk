@@ -138,9 +138,9 @@ VALGRIND_FLAGS=--verbose
 VALGRIND_TOOLS=none memcheck helgrind
 #   Other Valgrind tools are: cachegrind , callgrind , drd , massif , dhat , lackey , exp-bbv , etc.
 # The options to pass to each respective tool, correspondingly
-VALGRIND_NONE_FLAGS=
-VALGRIND_MEMCHECK_FLAGS=--leak-check=full --track-origins=yes
-VALGRIND_HELGRIND_FLAGS=
+VALGRIND_none_FLAGS=
+VALGRIND_memcheck_FLAGS=--leak-check=full --track-origins=yes
+VALGRIND_helgrind_FLAGS=
 
 # Option to output version information and exit (commmonly --version , -v or -V) in the corresponding programs
 CC_VERSION_FLAG=--version
@@ -161,7 +161,7 @@ YACC_CPPFLAGS=
 LEX_CPPFLAGS=
 
 # Add here the options to be globally passed to CC, YACC, and LEX, respectively.
-CFLAGS=-fdiagnostics-color=always -std=c17 -O0
+CFLAGS=-fdiagnostics-color=always -std=gnu11 -O0
 YFLAGS=--report=state --report=itemset --report=lookahead
 LFLAGS=
 
