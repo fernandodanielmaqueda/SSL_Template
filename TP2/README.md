@@ -9,5 +9,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp2
+make run-tp2 'tp2_ARGS=archivo.i'
 ```

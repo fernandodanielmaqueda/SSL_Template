@@ -10,5 +10,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp3
+make run-tp3 'tp3_ARGS=archivo.i'
 ```

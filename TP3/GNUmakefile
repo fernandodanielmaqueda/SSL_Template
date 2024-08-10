@@ -16,7 +16,7 @@ BIN_PROGRAMS+=$(program1)
 
 # Executing the program with this makefile.
 #   The arguments to pass to the program.
-$(program1)_ARGS:=archivo.c
+$(program1)_ARGS:=archivo.i
 #   The working directory for the program. Alternatively, it can be left empty to use the current directory.
 $(program1)_CWD:=
 
