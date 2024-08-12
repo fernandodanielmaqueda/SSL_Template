@@ -19,6 +19,14 @@ tests/*
 obj/
 bin/
 
+# Lex-generated files
+*.lex.yy.c
+
+# Yacc-generated files
+*.tab.c
+*.tab.h
+*.output
+
 # Prerequisite files
 *.d
 *.d.timestamp
@@ -47,16 +55,16 @@ obj/*.i
 *.pch
 
 # Libraries
-#*.lib
-#*.a
-#*.la
-#*.lo
+*.lib
+*.a
+*.la
+*.lo
 
 # Shared objects (inc. Windows DLLs)
-#*.dll
-#*.so
-#*.so.*
-#*.dylib
+*.dll
+*.so
+*.so.*
+*.dylib
 
 # Executables
 *.exe
