@@ -5,26 +5,37 @@
 !.vscode/settings.json
 !.vscode/tasks.json
 
+# Test files
+tests/
+tests/*
+
+# Makefile
+#GNUmakefile
+#mkframework/
+#mkframework/*
+
 # Generated folders
 .deps/
 obj/
 bin/
 
-# Prerequisites
+# Prerequisite files
 *.d
 *.d.timestamp
+
+# Preprocessed files
+#*.i
+# Generated-only preprocessed files
+obj/*.i
+
+# Assembly files
+*.s
 
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
-
-# Assembly files
-*.s
-
-# Preprocessed files
-*.i
 
 # Linker output
 *.ilk

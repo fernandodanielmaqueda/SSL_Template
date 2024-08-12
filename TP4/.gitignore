@@ -1,5 +1,0 @@
-# Toma los archivos .i de entrada
-!*.i
-
-# Sólo ignora los archivos .i generados por el compilador
-./obj/*.i
