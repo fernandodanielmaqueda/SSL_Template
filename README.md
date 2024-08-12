@@ -3,7 +3,7 @@
 
 Repositorio designado para los trabajos prácticos *grupales* de la asignatura
 **Sintáxis y Semántica de los Lenguajes**,
-perteneciente a la carrera de **Ingeniería en Sistemas de Información** y que se dicta en la
+perteneciente a la carrera de **Ingeniería en Sistemas de Información** dictada en la
 **Universidad Tecnológica Nacional - Facultad Regional Buenos Aires** (***UTN FRBA***).
 
 - ***Docente:*** Santiago Ferreiros Cabrera
