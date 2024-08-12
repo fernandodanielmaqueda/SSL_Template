@@ -1,11 +1,10 @@
 # SSL - 2024 - K2051
-## Grupo \## (Completar)
+## Grupo \## (*Completar*)
 
 Repositorio designado para los trabajos prácticos grupales de la asignatura
-*Sintáxis y Semántica de los Lenguajes*
-perteneciente a la carrera de Ingeniería en Sistemas de Información
-dictada en la Universidad Tecnológica Nacional,
-Facultad Regional Buenos Aires (UTN FRBA).
+**Sintáxis y Semántica de los Lenguajes**
+perteneciente a la carrera de **Ingeniería en Sistemas de Información** dictada en la
+**Universidad Tecnológica Nacional - Facultad Regional Buenos Aires** (***UTN FRBA***).
 
 - ***Docente:*** Santiago Ferreiros Cabrera
 - ***Tutor asignado:*** *Completar cuando sea publicado en la planilla*
