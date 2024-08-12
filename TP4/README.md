@@ -10,5 +10,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp4 'tp4_ARGS=archivo.i'
+./bin/tp4 'archivo.i'
 ```

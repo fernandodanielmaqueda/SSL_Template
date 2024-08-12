@@ -1,5 +1,5 @@
 # TP2
-## FLEX para reconocimiento de categorías léxicas de C
+## Flex para reconocimiento de categorías léxicas de C
 
 ### Ficha técnica
 - **Estándar de C utilizado**:
@@ -9,5 +9,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp2 'tp2_ARGS=archivo.i'
+./bin/tp2 'archivo.i'
 ```

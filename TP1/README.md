@@ -14,5 +14,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp1
+./bin/tp1 'entrada.txt' 'salida.txt'
 ```
