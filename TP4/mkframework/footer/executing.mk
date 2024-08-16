@@ -75,7 +75,7 @@ else
 	$(if $(VERBOSE),@$$(PRINTF) '\n#####( [valgrind-$(1)-$(3)] $$(MKFWK_PRINTF_FORMAT_MSG_INIT_TARGET-valgrind) )#####\n')
 	$$(call mkfwk_recipe_check_target_program_existence,$$($(2)DIR)$(3)$$(EXEEXT))
 	$(if $(VERBOSE),@$$(PRINTF) '\n<<< VALGRIND: $$(MKFWK_PRINTF_FORMAT_MSG_DO_TARGET-valgrind): "%s" >>>\n' '$$($(2)DIR)$(3)$$(EXEEXT)')
-	$$(call mkfwk_recipe_change_cwd_to_execute,$(2)_CWD,$$(VALGRIND) $$(VALGRIND_FLAGS) --tool=$(1) $$(VALGRIND_$(1)_FLAGS) '$$(abspath $$($(2)DIR)$(3)$$(EXEEXT))' $$($(3)_ARGS) ;)
+	$$(call mkfwk_recipe_change_cwd_to_execute,$(3)_CWD,$$(VALGRIND) $$(VALGRIND_FLAGS) --tool=$(1) $$(VALGRIND_$(1)_FLAGS) '$$(abspath $$($(2)DIR)$(3)$$(EXEEXT))' $$($(3)_ARGS) ;)
 	$(if $(VERBOSE),@$$(PRINTF) '<<< $$(MKFWK_PRINTF_FORMAT_MSG_DONE) >>>\n')
 	$(if $(VERBOSE),@$$(PRINTF) '\n#####( $$(MKFWK_PRINTF_FORMAT_MSG_FINISHED) )#####\n')
 endif

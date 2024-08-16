@@ -1,5 +1,5 @@
 # TP3
-## BISON para reconocimiento de estructuras de frase
+## Bison para reconocimiento de estructuras sintácticas
 
 ### Ficha técnica
 - **Estándar de C utilizado**:
@@ -10,5 +10,5 @@
 - **Secuencia de comandos utilizados para compilar y ejecutar el programa**:
 ```bash
 make all
-make run-tp3
+./bin/tp3 'archivo.i'
 ```

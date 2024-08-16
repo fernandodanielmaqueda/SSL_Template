@@ -7,7 +7,7 @@
         "${workspaceFolder}/src"
       ],
       "defines": [],
-      "cStandard": "c17"
+      "cStandard": "c11"
     }
   ],
   "version": 4
