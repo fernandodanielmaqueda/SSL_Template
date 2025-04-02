@@ -1,0 +1,37 @@
+name: Test TP 4
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'TP4/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List directory structure
+      run: ls -R
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc colordiff flex bison libfl-dev libbison-dev
+
+    - name: Compile code with make
+      run: |
+        make -C ./TP4
+
+    - name: Run test script
+      run: |
+        chmod +x ./TP4/tests/run_tests_tp_4.sh
+        ./TP4/tests/run_tests_tp_4.sh
+
+    - name: Clean up
+      run: rm TP4/bin/tp4 TP4/tests/output_test_*.txt TP4/tests/expected_outputs/expected_output_*_clean.txt

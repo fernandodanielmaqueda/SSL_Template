@@ -1,0 +1,37 @@
+name: Test TP 2
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'TP2/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List directory structure
+      run: ls -R
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc colordiff flex bison libfl-dev libbison-dev
+
+    - name: Compile code with make
+      run: |
+        make -C ./TP2
+
+    - name: Run test script
+      run: |
+        chmod +x ./TP2/tests/run_tests_tp_2.sh
+        ./TP2/tests/run_tests_tp_2.sh
+
+    - name: Clean up
+      run: rm TP2/bin/tp2 TP2/tests/output_test_*.txt TP2/tests/expected_outputs/expected_output_*_clean.txt

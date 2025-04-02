@@ -1,0 +1,35 @@
+* Listado de variables declaradas (tipo de dato y numero de linea):
+acumulador: float, linea 2
+i: unsigned int, linea 12
+j: unsigned int, linea 12
+a: unsigned int, linea 12
+b: int, linea 14
+
+* Listado de funciones declaradas o definidas:
+potencia: definicion, input: float base, long exp, retorna: float, linea 1
+rutina: declaracion, input: int x , retorna: void, linea 9
+main: definicion, input: void, retorna: int, linea 11
+rutina: definicion, input: int x, retorna: void, linea 38
+
+* Listado de sentencias indicando tipo, numero de linea y de columna:
+for: linea 3, columna 5
+return: linea 6, columna 5
+if: linea 13, columna 5
+while: linea 15, columna 9
+continue: linea 19, columna 13
+switch: linea 23, columna 5
+case: linea 24, columna 9
+break: linea 26, columna 13
+case: linea 27, columna 9
+return: linea 29, columna 13
+default: linea 30, columna 9
+return: linea 31, columna 13
+return: linea 35, columna 5
+do/while: linea 39, columna 5
+if/else: linea 44, columna 5
+
+* Listado de estructuras sintácticas no reconocidas
+"j = a": linea 25
+
+* Listado de cadenas no reconocidas:
+@double: linea 28, columna 13

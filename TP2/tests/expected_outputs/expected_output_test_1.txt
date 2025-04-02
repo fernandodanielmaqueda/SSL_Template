@@ -1,0 +1,55 @@
+* Listado de identificadores encontrados:
+cadena: aparece 2 veces
+cadena_2: aparece 1 vez
+main: aparece 1 vez
+
+* Listado de literales cadena encontrados:
+"mundo": longitud 5
+"texto": longitud 5
+"Hola, Mundo\n": longitud 13
+
+* Listado de palabras reservadas (tipos de dato):
+int: linea 1, columna 1
+void: linea 1, columna 10
+char: linea 2, columna 5
+char: linea 3, columna 5
+
+* Listado de palabras reservadas (estructuras de control):
+if: linea 4, columna 5
+return: linea 6, columna 5
+
+* Listado de palabras reservadas (otros):
+sizeof: linea 5, columna 14
+
+* Listado de constantes enteras decimales:
+20: valor 20
+10: valor 10
+Total acumulado de sumar todas las constantes decimales: 30
+
+* Listado de constantes enteras hexadecimales:
+0xFF: valor entero decimal 255
+
+* Listado de constantes enteras octales:
+07: valor entero decimal 7
+017: valor entero decimal 15
+07: valor entero decimal 7
+
+* Listado de constantes reales:
+1.5: parte entera 1.000000 , mantisa 0.500000
+
+* Listado de constantes caracter enumerados:
+1) 'a'
+2) '\0'
+
+* Listado de operadores/caracteres de puntuación:
+(: aparece 3 veces
+): aparece 3 veces
+{: aparece 1 vez
+*: aparece 4 veces
+=: aparece 3 veces
+;: aparece 3 veces
++: aparece 6 veces
+}: aparece 1 vez
+
+* Listado de cadenas no reconocidas:
+@double@: linea 5, columna 5

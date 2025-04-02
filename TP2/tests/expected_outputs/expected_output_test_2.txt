@@ -1,0 +1,57 @@
+* Listado de identificadores encontrados:
+a: aparece 2 veces
+b: aparece 2 veces
+compute: aparece 2 veces
+main: aparece 1 vez
+result: aparece 1 vez
+x: aparece 2 veces
+y: aparece 2 veces
+
+* Listado de literales cadena encontrados:
+-
+
+* Listado de palabras reservadas (tipos de dato):
+float: linea 1, columna 1
+float: linea 1, columna 15
+float: linea 1, columna 24
+int: linea 5, columna 1
+void: linea 5, columna 10
+float: linea 6, columna 5
+float: linea 7, columna 5
+float: linea 8, columna 5
+
+* Listado de palabras reservadas (estructuras de control):
+return: linea 2, columna 5
+return: linea 9, columna 5
+
+* Listado de palabras reservadas (otros):
+-
+
+* Listado de constantes enteras decimales:
+-
+
+* Listado de constantes enteras hexadecimales:
+-
+
+* Listado de constantes enteras octales:
+0: valor entero decimal 0
+
+* Listado de constantes reales:
+25.0: parte entera 25.000000, mantisa 0.000000
+5.0: parte entera 5.000000, mantisa 0.000000
+
+* Listado de constantes caracter enumerados:
+-
+
+* Listado de operadores/caracteres de puntuación:
+(: aparece 3 veces
+,: aparece 2 veces
+): aparece 3 veces
+{: aparece 2 veces
+/: aparece 1 vez
+;: aparece 5 veces
+}: aparece 2 veces
+=: aparece 3 veces
+
+* Listado de cadenas no reconocidas:
+-

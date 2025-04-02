@@ -1,0 +1,37 @@
+name: Test TP 1
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'TP1/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List directory structure
+      run: ls -R
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc colordiff
+
+    - name: Compile code with make
+      run: |
+        make -C ./TP1
+
+    - name: Run test script
+      run: |
+        chmod +x ./TP1/tests/run_tests_tp_1.sh
+        ./TP1/tests/run_tests_tp_1.sh
+
+    - name: Clean up
+      run: rm TP1/bin/tp1 TP1/tests/output_test_*.txt TP1/tests/expected_outputs/expected_output_*_clean.txt

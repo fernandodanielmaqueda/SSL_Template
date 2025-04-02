@@ -1,0 +1,32 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0  # versión actual del repositorio
+    hooks:
+      - id: check-added-large-files  # Verifica si se han añadido archivos grandes
+      - id: check-yaml  # Verifica que los archivos YAML sean válidos
+      - id: end-of-file-fixer  # Asegura que haya una nueva línea al final de los archivos
+      - id: trailing-whitespace  # Elimina espacios en blanco al final de las líneas
+
+  - repo: local
+    hooks:
+      - id: cppcheck
+        name: cppcheck
+        entry: cppcheck --enable=warning --force --error-exitcode=1 --language=c
+        language: system
+        types: [c]
+        files: \.(c|cpp|h|hpp)$
+
+      - id: cpplint
+        name: cpplint
+        entry: cpplint
+        language: python
+        types: [c]
+        files: \.(c|cpp|h|hpp)$
+        args: [--filter=-legal/copyright]
+
+      - id: clang-format
+        name: clang-format
+        entry: clang-format -i
+        language: system
+        types: [c]
+        files: \.(c|cpp|h|hpp)$

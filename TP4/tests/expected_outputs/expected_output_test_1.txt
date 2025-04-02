@@ -1,0 +1,58 @@
+* Listado de variables declaradas (tipo de dato y numero de linea):
+compartida: int, linea 7, columna 19
+a: unsigned int, linea 13, columna 18
+b: unsigned int, linea 13, columna 26
+c: unsigned int, linea 13, columna 48
+d: unsigned int, linea 13, columna 60
+e: const float, linea 14, columna 17
+f: const float, linea 14, columna 64
+i: int, linea 16, columna 13
+acumulador: float, linea 63, columna 11
+
+* Listado de funciones declaradas y definidas:
+imprimir: definicion, input: void, retorna: void, linea 1
+potencia: declaracion, input: float base, unsigned long, retorna: float, linea 8
+incremento: declaracion, input: int y, retorna: int, linea 9
+main: definicion, input: void, retorna: int, linea 12
+incremento: definicion, input: int x, retorna: int, linea 43
+
+* Listado de errores semanticos:
+2:5: Funcion 'printf' sin declarar
+7:5: 'imprimir' redeclarado como un tipo diferente de simbolo
+Nota: la declaracion previa de 'imprimir' es de tipo 'void(void)': 1:6
+10:6: conflicto de tipos para 'incremento'; la ultima es de tipo 'long(long)'
+Nota: la declaracion previa de 'incremento' es de tipo 'int(int)': 9:5
+13:30: Incompatibilidad de tipos al inicializar el tipo 'unsigned int' usando el tipo 'char *'
+13:57: Redeclaracion de 'c'
+Nota: la declaracion previa de 'c' es de tipo 'unsigned int': 13:48
+13:66: Operandos invalidos del operador binario * (tienen 'unsigned int' y 'char *')
+14:61: conflicto de tipos para 'a'; la ultima es de tipo 'const float'
+Nota: la declaracion previa de 'a' es de tipo 'unsigned int': 13:18
+14:68: Incompatibilidad de tipos al inicializar el tipo 'float' usando el tipo 'void (*)(void)'
+17:11: 'x' sin declarar
+17:9: El objeto invocado 'f' no es una funcion o un puntero a una funcion
+Nota: declarado aqui: 14:64
+29:15: Se requiere un valor-L modificable como operando izquierdo de la asignacion
+30:23: Asignacion de la variable de solo lectura 'e'
+31:20: Incompatibilidad de tipos al retornar el tipo 'void (*)(void)' pero se esperaba 'int'
+34:5: Insuficientes argumentos para la funcion 'incremento'
+Nota: declarado aqui: 9:5
+35:32: Operandos invalidos del operador binario * (tienen 'int' y 'void (*)(void)')
+35:5: Demasiados argumentos para la funcion 'potencia'
+Nota: declarado aqui: 8:7
+38:14: Incompatibilidad de tipos para el argumento 1 de 'potencia'
+Nota: se esperaba 'float' pero el argumento es de tipo 'char *': 8:22
+38:20: Incompatibilidad de tipos para el argumento 2 de 'potencia'
+Nota: se esperaba 'unsigned long' pero el argumento es de tipo 'int (*)(int)': 8:28
+39:7: No se ignora el valor de retorno void como deberia ser
+40:12: Incompatibilidad de tipos al retornar el tipo 'char *' pero se esperaba 'int'
+47:5: Redefinicion de 'incremento'
+Nota: la definicion previa de 'incremento' es de tipo 'int(int)': 43:5
+62:8: conflicto de tipos para 'potencia'; la ultima es de tipo 'double(double, unsigned int)'
+Nota: la declaracion previa de 'potencia' es de tipo 'float(float, unsigned long)': 8:7
+
+* Listado de errores sintacticos:
+"c = a": linea 26
+
+* Listado de errores lexicos:
+@double: linea 30, columna 15

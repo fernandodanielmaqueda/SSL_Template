@@ -1,0 +1,24 @@
+name: Format check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  precommit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format cppcheck
+
+    - name: Run clang-format
+      run: |
+        find . -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' | xargs clang-format -i
+        git diff --exit-code
