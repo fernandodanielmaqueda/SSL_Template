@@ -56,7 +56,7 @@ MKFWK_CODE_DIR:=es_AR/
 # Adds to the list of binary prefixes.
 BINARY_PREFIXES+=BIN
 
-# Subdirectory where resulting programs and libraries shall be placed.
+# Subdirectory where resulting programs and libraries can be placed.
 #   If left empty uses the directory of the top-level makefile. By default: bin/
 BINDIR:=bin/
 # Subdirectory where intermediate CC, YACC and LEX files shall be placed.
@@ -139,7 +139,7 @@ VALGRIND_TOOLS=none memcheck helgrind
 #   Other Valgrind tools are: cachegrind , callgrind , drd , massif , dhat , lackey , exp-bbv , etc.
 # The options to pass to each respective tool, correspondingly
 VALGRIND_none_FLAGS=
-VALGRIND_memcheck_FLAGS=--leak-check=full --track-origins=yes
+VALGRIND_memcheck_FLAGS=--leak-check=full --show-leak-kinds=all --track-origins=yes
 VALGRIND_helgrind_FLAGS=
 
 # Option to output version information and exit (commmonly --version , -v or -V) in the corresponding programs

@@ -1,9 +1,29 @@
+# Log files
+*.log
+
+# Config files
+*.config
+
+# Data files
+*.dat
+
+# Dump files
+*.dmp
+
 # Visual Studio Code files
 .vscode/*
 !.vscode/c_cpp_properties.json
 !.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
+
+# Eclipse files
+.settings/
+.cproject
+.project
+
+# IntelliJ files
+.idea/
 
 # Test files
 tests/
@@ -20,6 +40,7 @@ obj/
 bin/
 
 # Lex-generated files
+lex.yy.c
 *.lex.yy.c
 
 # Yacc-generated files

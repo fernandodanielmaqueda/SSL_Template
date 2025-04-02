@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) Launch bin/tp2",
+      "name": "(gdb) Depurar bin/tp2",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp2",
@@ -24,7 +24,7 @@
       "preLaunchTask": "make bin/tp2"
     },
     {
-      "name": "(gdb) Launch bin/tp2.exe",
+      "name": "(gdb) Depurar bin/tp2.exe",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp2.exe",
