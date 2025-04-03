@@ -6,7 +6,7 @@ this_dir=$(dirname "$0")
 # Includes color definitions
 . "${this_dir}/colors.sh"
 
-. "${this_dir}/params.sh"
+. "${this_dir}/settings.sh"
 
 # Validar la cantidad recibida de parámetros
 if [ "$#" -ne 1 ]; then
