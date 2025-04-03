@@ -8,6 +8,14 @@ this_dir=$(dirname "$0")
 
 . "${this_dir}/params.sh"
 
+# Validar la cantidad recibida de parámetros
+if [ "$#" -ne 1 ]; then
+    printf "${Yellow}Uso: $0 <ruta al programa>${Color_Off}\n"
+    exit 1
+fi
+
+program_path="$1"
+
 # Variables contadoras
 total_tests=0
 passed_tests=0
@@ -18,7 +26,7 @@ if ! [ -f "$program_path" ]; then
     exit 1
 fi
 
-chmod +x ${program_path}
+chmod +x "${program_path}"
 
 # Ejecutar pruebas
 for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
@@ -35,7 +43,7 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
     fi
 
     # Ejecutar el programa con rutas de archivo de entrada y salida
-    ${program_path} ${input_path} > ${actual_output_path}
+    '${program_path}' '${input_path}' > '${actual_output_path}'
 
     if ! [ -f "$actual_output_path" ]; then
         printf "\n${Yellow}No existe el archivo de salida actual: "%s"${Color_Off}\n" "$actual_output_path"

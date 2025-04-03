@@ -39,7 +39,7 @@ jobs:
       working-directory: ./TP1
       run: |
         chmod +x ./tests/run_testsuite.sh
-        ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh './bin/tp1'
 
     - name: Clean up
       working-directory: ./TP1

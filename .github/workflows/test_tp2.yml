@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential colordiff flex libfl-dev
+        sudo apt-get install -y build-essential flex libfl-dev
     
     - name: Display installed versions
       run: |
@@ -40,7 +40,7 @@ jobs:
       working-directory: ./TP2
       run: |
         chmod +x ./tests/run_testsuite.sh
-        ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh './bin/tp2'
 
     - name: Clean up
       working-directory: ./TP2

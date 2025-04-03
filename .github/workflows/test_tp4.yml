@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential colordiff flex libfl-dev bison libbison-dev
+        sudo apt-get install -y build-essential flex libfl-dev bison libbison-dev
 
     - name: Display installed versions
       run: |
@@ -41,7 +41,7 @@ jobs:
       working-directory: ./TP4
       run: |
         chmod +x ./tests/run_testsuite.sh
-        ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh './bin/tp4'
 
     - name: Clean up
       working-directory: ./TP4

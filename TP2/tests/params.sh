@@ -1,6 +1,5 @@
 #!/bin/sh
 
-program_path='./bin/tp2'
 input_extension='.i'
 
 # Porcentaje mínimo de coincidencia para pasar un test

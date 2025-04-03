@@ -301,7 +301,7 @@
       "problemMatcher": []
     },
     {
-      "label": "./tests/run_testsuite.sh",
+      "label": "./tests/run_testsuite.sh './bin/tp4'",
       "dependsOn": "",
       "hide": false,
       "icon": {"id": "beaker"},
@@ -309,7 +309,34 @@
       "promptOnClose": false,
       "detail": "Ejecutar todos los tests",
       "command": "./tests/run_testsuite.sh",
-      "args": [],
+      "args": ["./bin/tp4"],
+      "runOptions": {},
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {},
+        "shell": {}
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
+    },
+    {
+      "label": "./tests/run_testsuite.sh './bin/tp4.exe'",
+      "dependsOn": "",
+      "hide": false,
+      "icon": {"id": "beaker"},
+      "isBackground": false,
+      "promptOnClose": false,
+      "detail": "Ejecutar todos los tests",
+      "command": "./tests/run_testsuite.sh",
+      "args": ["./bin/tp4.exe"],
       "runOptions": {},
       "type": "shell",
       "options": {

@@ -1,6 +1,5 @@
 #!/bin/sh
 
-program_path='./bin/tp1'
 input_extension='.txt'
 
 # Porcentaje mínimo de coincidencia para pasar un test
