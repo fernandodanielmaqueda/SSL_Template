@@ -4,11 +4,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) Depurar bin/tp2",
+      "name": "(gdb) Depurar ./bin/tp2 'archivo.i'",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp2",
-      "args": [],
+      "args": ["archivo.i"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],
@@ -24,11 +24,11 @@
       "preLaunchTask": "make bin/tp2"
     },
     {
-      "name": "(gdb) Depurar bin/tp2.exe",
+      "name": "(gdb) Depurar ./bin/tp2.exe 'archivo.i'",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp2.exe",
-      "args": [],
+      "args": ["archivo.i"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],

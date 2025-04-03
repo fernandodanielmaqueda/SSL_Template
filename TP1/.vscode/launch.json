@@ -4,11 +4,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) Depurar bin/tp1",
+      "name": "(gdb) Depurar ./bin/tp1 'entrada.txt'",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp1",
-      "args": [],
+      "args": ["entrada.txt"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],
@@ -24,11 +24,11 @@
       "preLaunchTask": "make bin/tp1"
     },
     {
-      "name": "(gdb) Depurar bin/tp1.exe",
+      "name": "(gdb) Depurar ./bin/tp1.exe 'entrada.txt'",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/tp1.exe",
-      "args": [],
+      "args": ["entrada.txt"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],
@@ -42,6 +42,6 @@
         }
       ],
       "preLaunchTask": "make bin/tp1.exe"
-    },
+    }
   ]
 }

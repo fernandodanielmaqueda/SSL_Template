@@ -22,16 +22,25 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc colordiff
+        sudo apt-get install -y git build-essential
+
+    - name: Display installed versions
+      run: |
+        git --version
+        make --version
+        gcc --version
 
     - name: Compile code with make
+      working-directory: ./TP1
       run: |
-        make -C ./TP1
+        make
 
     - name: Run test script
+      working-directory: ./TP1
       run: |
-        chmod +x ./TP1/tests/run_tests_tp_1.sh
-        ./TP1/tests/run_tests_tp_1.sh
+        chmod +x ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh
 
     - name: Clean up
-      run: rm TP1/bin/tp1 TP1/tests/output_test_*.txt TP1/tests/expected_outputs/expected_output_*_clean.txt
+      working-directory: ./TP1
+      run: rm -f ./bin/tp1 ./tests/output/test_*.txt ./tests/output/expected/test_*_clean.txt

@@ -22,16 +22,27 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc colordiff flex bison libfl-dev libbison-dev
+        sudo apt-get install -y build-essential colordiff flex libfl-dev bison libbison-dev
+
+    - name: Display installed versions
+      run: |
+        git --version
+        make --version
+        gcc --version
+        flex --version
+        bison --version
 
     - name: Compile code with make
+      working-directory: ./TP4
       run: |
-        make -C ./TP4
+        make
 
     - name: Run test script
+      working-directory: ./TP4
       run: |
-        chmod +x ./TP4/tests/run_tests_tp_4.sh
-        ./TP4/tests/run_tests_tp_4.sh
+        chmod +x ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh
 
     - name: Clean up
-      run: rm TP4/bin/tp4 TP4/tests/output_test_*.txt TP4/tests/expected_outputs/expected_output_*_clean.txt
+      working-directory: ./TP4
+      run: rm -f ./bin/tp4 ./tests/output/test_*.txt ./tests/output/expected/test_*_clean.txt

@@ -228,7 +228,7 @@
       "promptOnClose": false,
       "detail": "Depurar en esta misma ventana por línea de comandos el programa tp2",
       "command": "make gdb-tp2",
-      "args": [],
+      "args": ["tp2_ARGS=archivo.i"],
       "runOptions": {},
       "type": "shell",
       "options": {
@@ -249,13 +249,13 @@
     {
       "label": "make valgrind-none-tp2",
       "dependsOn": "",
-      "hide": true,
+      "hide": false,
       "icon": {"id": "debug"},
       "isBackground": false,
       "promptOnClose": false,
       "detail": "Ejecutar en esta misma ventana Valgrind con ninguna herramienta sobre el programa tp2",
       "command": "make valgrind-none-tp2",
-      "args": [],
+      "args": ["tp2_ARGS=archivo.i"],
       "runOptions": {},
       "type": "shell",
       "options": {
@@ -276,13 +276,13 @@
     {
       "label": "make valgrind-memcheck-tp2",
       "dependsOn": "",
-      "hide": true,
+      "hide": false,
       "icon": {"id": "debug"},
       "isBackground": false,
       "promptOnClose": false,
       "detail": "Ejecutar en esta misma ventana Valgrind con la herramienta memcheck sobre el programa tp2",
       "command": "make valgrind-memcheck-tp2",
-      "args": [],
+      "args": ["tp2_ARGS=archivo.i"],
       "runOptions": {},
       "type": "shell",
       "options": {
@@ -299,6 +299,33 @@
         "panel": "new"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "./tests/run_testsuite.sh",
+      "dependsOn": "",
+      "hide": false,
+      "icon": {"id": "beaker"},
+      "isBackground": false,
+      "promptOnClose": false,
+      "detail": "Ejecutar todos los tests",
+      "command": "./tests/run_testsuite.sh",
+      "args": [],
+      "runOptions": {},
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {},
+        "shell": {}
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
     }
   ]
 }

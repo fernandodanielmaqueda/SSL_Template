@@ -49,8 +49,7 @@
 	/* 1. Se utiliza para rutinas de complemento que llaman al analizador léxico o son llamadas por este; la presencia de esta sección es opcional */
     /* 2. Toda esta sección simplemente se copia íntegramente al archivo de salida del analizador léxico (scanner) generado (*.lex.yy.c) */
 
-int main(void)
-{
+int main(int argc, char *argv[]) {
     yylex();
 
     return 0;

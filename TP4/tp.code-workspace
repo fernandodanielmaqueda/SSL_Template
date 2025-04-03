@@ -5,34 +5,30 @@
 		}
 	],
 
-
 	"settings": {
 
 		"debug.onTaskErrors": "abort",
 	
 		// Configure glob patterns for excluding files and folders. For example, the File Explorer decides which files and folders to show or hide based on this setting. Refer to the `search.exclude` setting to define search-specific excludes.
 		"files.exclude": {
-		  "**/.git": true,
 		  "**/.svn": true,
 		  "**/.hg": true,
 		  "**/CVS": true,
 		  "**/.DS_Store": true,
 		  "**/Thumbs.db": true,
-	
-		  //"src": true,
-		  "mkframework": true,
-		  "thirdparty/cspec": true,
-		  "**/.deps": true,
-		  "**/.vscode": true,
-		  "**/obj": true,
-		  "**/bin": true,
-		  "**/Makefile": true,
-		  "**/makefile": true,
-		  "**/GNUmakefile": true,
-		  "**/*.mk": true,
-		  "**/.gitattributes": true,
-		  "**/.gitignore": true,
-		  "**/.gitmodules": true
+
+		  ".vscode": false,
+		  "mkframework": false,
+		  "src": false,
+		  "tests": false,
+		  ".deps": false,
+		  "obj": false,
+		  "bin": false,
+		  "Makefile": false,
+		  "makefile": false,
+		  "GNUmakefile": false,
+		  "README.md": false,
+		  "tp.code-workspace": false
 		},
 	
 		"files.associations": {

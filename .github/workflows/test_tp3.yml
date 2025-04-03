@@ -22,16 +22,27 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc colordiff flex bison libfl-dev libbison-dev
+        sudo apt-get install -y build-essential colordiff flex libfl-dev bison libbison-dev
+
+    - name: Display installed versions
+      run: |
+        git --version
+        make --version
+        gcc --version
+        flex --version
+        bison --version
 
     - name: Compile code with make
+      working-directory: ./TP3
       run: |
-        make -C ./TP3
+        make
 
     - name: Run test script
+      working-directory: ./TP3
       run: |
-        chmod +x ./TP3/tests/run_tests_tp_3.sh
-        ./TP3/tests/run_tests_tp_3.sh
+        chmod +x ./tests/run_testsuite.sh
+        ./tests/run_testsuite.sh
 
     - name: Clean up
-      run: rm TP3/bin/tp3 TP3/tests/output_test_*.txt TP3/tests/expected_outputs/expected_output_*_clean.txt
+      working-directory: ./TP3
+      run: rm -f ./bin/tp3 ./tests/output/test_*.txt ./tests/output/expected/test_*_clean.txt

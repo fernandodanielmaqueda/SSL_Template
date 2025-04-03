@@ -69,16 +69,14 @@ exp
 
 /* Inicio de la sección de epílogo (código de usuario) */
 
-int main(void)
-{
+int main(int argc, char *argv[]) {
         inicializarUbicacion();
 
         #if YYDEBUG
                 yydebug = 1;
         #endif
 
-        while(1)
-        {
+        while(1) {
                 printf("Ingrese una expresion aritmetica en notacion polaca inversa para resolver:\n");
                 printf("(La funcion yyparse ha retornado con valor: %d)\n\n", yyparse());
                 /* Valor | Significado */
@@ -92,8 +90,7 @@ int main(void)
 }
 
 	/* Definición de la funcion yyerror para reportar errores, necesaria para que la funcion yyparse del analizador sintáctico pueda invocarla para reportar un error */
-void yyerror(const char* literalCadena)
-{
+void yyerror(const char* literalCadena) {
         fprintf(stderr, "Bison: %d:%d: %s\n", yylloc.first_line, yylloc.first_column, literalCadena);
 }
 
