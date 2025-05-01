@@ -43,7 +43,7 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
     fi
 
     # Ejecutar el programa con rutas de archivo de entrada y salida
-    '${program_path}' '${input_path}' > '${actual_output_path}'
+    "${program_path}" "${input_path}" > "${actual_output_path}"
 
     if ! [ -f "$actual_output_path" ]; then
         printf "\n${Yellow}No existe el archivo de salida actual: "%s"${Color_Off}\n" "$actual_output_path"
