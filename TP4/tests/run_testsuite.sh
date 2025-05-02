@@ -21,12 +21,23 @@ total_tests=0
 passed_tests=0
 total_percentage=0
 
-if ! [ -f "$program_path" ]; then
-    printf "${Yellow}No existe el programa objetivo: '%s'. Se lo debe construir primero...${Color_Off}\n" "$program_path"
+# Case 1: Direct regular file. Try to make it executable.
+if [ -f "$program_path" ]; then
+    chmod +x "${program_path}"
+    if [ -x "${program_path}" ]; then
+        printf "%s: Archivo ejecutable encontrado\n" "${program_path}"
+    else
+        printf "${Yellow}%s: El archivo no es ejecutable${Color_Off}\n" "${program_path}"
+        exit 1
+    fi
+# Case 2: Found in PATH (only if it's a command name, not a path)
+elif command -v "${program_path}" >/dev/null 2>&1; then
+    printf "%s: Comando encontrado en la variable de entorno PATH\n" "${program_path}"
+# Case 3: Not found
+else
+    printf "${Yellow}%s: El archivo/comando no existe${Color_Off}\n" "$program_path"
     exit 1
 fi
-
-chmod +x "${program_path}"
 
 # Ejecutar pruebas
 for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
@@ -43,8 +54,17 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
     fi
 
     # Ejecutar el programa con rutas de archivo de entrada y salida
-	printf "%s %s > %s" "${program_path}" "${input_path}" "${actual_output_path}"
+	printf "%s %s > %s\n" "${program_path}" "${input_path}" "${actual_output_path}"
 	"${program_path}" "${input_path}" > "${actual_output_path}"
+
+    # Verificar si el programa se ejecutó correctamente
+    ret=$?
+    if [ ${ret} -ne 0 ]; then
+        printf "\n${Yellow}El programa retorno con el valor de salida %s${Color_Off}\n" "${ret}"
+        #break
+    else
+        printf "\n${Green}El programa retorno con el valor de salida %s${Color_Off}\n" "${ret}"
+    fi
 
     if ! [ -f "$actual_output_path" ]; then
         printf "\n${Yellow}No existe el archivo de salida actual: "%s"${Color_Off}\n" "$actual_output_path"
@@ -103,7 +123,7 @@ else
     average_percentage=0
 fi
 
-printf "\n${Blue}Resultado${Color_Off}\n\n"
+printf "\n${Blue}Resumen${Color_Off}\n\n"
 printf "Se supero %s test(s) de un total de %s test(s)\n\n" "$passed_tests" "$total_tests"
 printf "Porcentaje promedio de cobertura de tests: %s%%\n" "$average_percentage"
 
