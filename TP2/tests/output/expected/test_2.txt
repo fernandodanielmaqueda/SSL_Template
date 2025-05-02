@@ -10,7 +10,10 @@ y: aparece 2 veces
 * Listado de literales cadena encontrados:
 -
 
-* Listado de palabras reservadas (tipos de dato):
+* Listado de palabras reservadas (clase de almacenamiento):
+-
+
+* Listado de palabras reservadas (especificadores de tipo):
 float: linea 1, columna 1
 float: linea 1, columna 15
 float: linea 1, columna 24
@@ -20,11 +23,29 @@ float: linea 6, columna 5
 float: linea 7, columna 5
 float: linea 8, columna 5
 
-* Listado de palabras reservadas (estructuras de control):
+* Listado de palabras reservadas (calificadores de tipo):
+-
+
+* Listado de palabras reservadas (struct o union):
+-
+
+* Listado de palabras reservadas (enumeracion):
+-
+
+* Listado de palabras reservadas (etiqueta):
+-
+
+* Listado de palabras reservadas (seleccion):
+-
+
+* Listado de palabras reservadas (iteracion):
+-
+
+* Listado de palabras reservadas (salto):
 return: linea 2, columna 5
 return: linea 9, columna 5
 
-* Listado de palabras reservadas (otros):
+* Listado de palabras reservadas (unario):
 -
 
 * Listado de constantes enteras decimales:

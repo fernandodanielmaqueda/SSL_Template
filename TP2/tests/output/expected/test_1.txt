@@ -8,17 +8,37 @@ main: aparece 1 vez
 "texto": longitud 5
 "Hola, Mundo\n": longitud 13
 
-* Listado de palabras reservadas (tipos de dato):
+* Listado de palabras reservadas (clase de almacenamiento):
+-
+
+* Listado de palabras reservadas (especificadores de tipo):
 int: linea 1, columna 1
 void: linea 1, columna 10
 char: linea 2, columna 5
 char: linea 3, columna 5
 
-* Listado de palabras reservadas (estructuras de control):
+* Listado de palabras reservadas (calificadores de tipo):
+-
+
+* Listado de palabras reservadas (struct o union):
+-
+
+* Listado de palabras reservadas (enumeracion):
+-
+
+* Listado de palabras reservadas (etiqueta):
+-
+
+* Listado de palabras reservadas (seleccion):
 if: linea 4, columna 5
+
+* Listado de palabras reservadas (iteracion):
+-
+
+* Listado de palabras reservadas (salto):
 return: linea 6, columna 5
 
-* Listado de palabras reservadas (otros):
+* Listado de palabras reservadas (unario):
 sizeof: linea 5, columna 14
 
 * Listado de constantes enteras decimales:
