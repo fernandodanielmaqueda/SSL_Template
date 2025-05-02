@@ -35,7 +35,7 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
     actual_output_path="${this_dir}/output/${test_name}.txt"
     expected_output_path="${this_dir}/output/expected/${test_name}.txt"
 
-    printf "${Purple}Ejecutando %s...${Color_Off}\n\n" "${test_name}"
+    printf "\n${Purple}Ejecutando %s...${Color_Off}\n\n" "${test_name}"
 
     if ! [ -f "$expected_output_path" ]; then
         printf "\n${Yellow}No existe el archivo de salida esperada: '%s'${Color_Off}\n" "$expected_output_path"
@@ -43,7 +43,8 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
     fi
 
     # Ejecutar el programa con rutas de archivo de entrada y salida
-    "${program_path}" "${input_path}" > "${actual_output_path}"
+	printf "%s %s > %s" "${program_path}" "${input_path}" "${actual_output_path}"
+	"${program_path}" "${input_path}" > "${actual_output_path}"
 
     if ! [ -f "$actual_output_path" ]; then
         printf "\n${Yellow}No existe el archivo de salida actual: "%s"${Color_Off}\n" "$actual_output_path"
@@ -80,12 +81,17 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
         printf "\nResultado de %s:${Red} FAIL con %s%% de cobertura. Minimo a alcanzar para superar test: %s%%${Color_Off}\n" "$test_name" "$percentage_matching" "$min_percentage_matching_per_test"
     fi
 
+    actual="${this_dir}/output/${test_name}_clean.txt"
+    expected="${this_dir}/output/expected/${test_name}_clean.txt"
+
     if ! command -v git >/dev/null 2>&1; then
         printf "\nDiferencias entre salida actual y salida esperada:\n"
-        diff "${this_dir}/output/${test_name}_clean.txt" "${this_dir}/output/expected/${test_name}_clean.txt"
+		printf "diff %s %s\n" "${actual}" "${expected}"
+		diff "${actual}" "${expected}"
     else
         printf "\nDiferencias indicadas segun colores de referencia:\n${Color_Off}  * Color por defecto: Informacion${Color_Off}\n${Cyan}  * Cian: Numeros de lineas con diferencias entre salida actual y esperada${Color_Off}\n${Red}  - Rojo: Lineas diferentes en salida actual${Color_Off}\n${Green}  + Verde: Lineas diferentes en salida esperada${Color_Off}\n"
-        git --no-pager diff --no-index --unified=0 "${this_dir}/output/${test_name}_clean.txt" "${this_dir}/output/expected/${test_name}_clean.txt"
+		printf "git --no-pager diff --no-index --unified=0 %s %s\n" "${actual}" "${expected}"
+		git --no-pager diff --no-index --unified=0 "${actual}" "${expected}"
     fi
     
 done
@@ -97,8 +103,9 @@ else
     average_percentage=0
 fi
 
-printf "\nSe supero %s test(s) de un total de %s test(s)\n" "$passed_tests" "$total_tests"
-printf "\nPorcentaje promedio de cobertura de tests: %s%%\n" "$average_percentage"
+printf "\n${Blue}Resultado${Color_Off}\n\n"
+printf "Se supero %s test(s) de un total de %s test(s)\n\n" "$passed_tests" "$total_tests"
+printf "Porcentaje promedio de cobertura de tests: %s%%\n" "$average_percentage"
 
 if awk -v a="$passed_tests" -v b="$min_quantity_test" 'BEGIN {exit !(a < b)}'; then
     pass_tests=0
