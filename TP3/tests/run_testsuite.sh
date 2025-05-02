@@ -1,14 +1,15 @@
 #!/bin/sh
 
-# Gets the relative directory of the current script
+# Obtiene la ruta relativa de este script
 this_dir=$(dirname "$0")
 
-# Includes color definitions
+# Incluye las definiciones de colores
 . "${this_dir}/colors.sh"
 
+# Incluye las configuraciones de la suite de tests
 . "${this_dir}/settings.sh"
 
-# Validar la cantidad recibida de parámetros
+# Validación de parámetros
 if [ "$#" -ne 1 ]; then
     printf "${Yellow}Uso: $0 <ruta al programa>${Color_Off}\n"
     exit 1
@@ -21,19 +22,22 @@ total_tests=0
 passed_tests=0
 total_percentage=0
 
-# Case 1: Direct regular file. Try to make it executable.
-if [ -f "$program_path" ]; then
+# Busca el archivo/comando a ejecutar
+#   Caso 1: Es el nombre de un comando definido en la variable de entorno PATH
+if command -v "${program_path}" >/dev/null 2>&1; then
+    printf "%s: Comando encontrado en la variable de entorno PATH\n" "${program_path}"
+#   Caso 2: Es la ruta a un archivo regular
+elif [ -f "$program_path" ]; then
+    # Intenta hacer ejecutable el archivo
     chmod +x "${program_path}"
+    # Verifica si el archivo es ejecutable
     if [ -x "${program_path}" ]; then
         printf "%s: Archivo ejecutable encontrado\n" "${program_path}"
     else
         printf "${Yellow}%s: El archivo no es ejecutable${Color_Off}\n" "${program_path}"
         exit 1
     fi
-# Case 2: Found in PATH (only if it's a command name, not a path)
-elif command -v "${program_path}" >/dev/null 2>&1; then
-    printf "%s: Comando encontrado en la variable de entorno PATH\n" "${program_path}"
-# Case 3: Not found
+#   Caso 3: No existe
 else
     printf "${Yellow}%s: El archivo/comando no existe${Color_Off}\n" "$program_path"
     exit 1
@@ -101,6 +105,7 @@ for input_path in "${this_dir}"/input/test_*"${input_extension}"; do
         printf "\nResultado de %s:${Red} FAIL con %s%% de cobertura. Minimo a alcanzar para superar test: %s%%${Color_Off}\n" "$test_name" "$percentage_matching" "$min_percentage_matching_per_test"
     fi
 
+    # Mostrar diferencias entre salida actual y esperada
     actual="${this_dir}/output/${test_name}_clean.txt"
     expected="${this_dir}/output/expected/${test_name}_clean.txt"
 
