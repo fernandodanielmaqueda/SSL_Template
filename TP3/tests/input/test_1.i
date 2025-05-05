@@ -6,6 +6,8 @@ float potencia(float base, long exp) {
     return acumulador;
 }
 
+j = a;
+
 void rutina(int x);
 
 int main(void) {
@@ -22,10 +24,9 @@ int main(void) {
 
     switch(potencia(j, 2)) {
         case 2:
-            j = a
             break;
         case 4:
-            @double = 0;
+            e @double = 0;
             return b-j;
         default:
             return 1+j+b;
