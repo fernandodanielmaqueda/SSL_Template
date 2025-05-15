@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Para que independientemente del locale comandos como awk usen . como separador decimal en lugar de ,
+export LC_NUMERIC=C
+
 # Obtiene la ruta relativa de este script
 this_dir=$(dirname "$0")
 
