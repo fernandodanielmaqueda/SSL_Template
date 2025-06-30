@@ -55,7 +55,7 @@ Total acumulado de sumar todas las constantes decimales: 30
 07: valor entero decimal 7
 
 * Listado de constantes reales:
-1.5: parte entera 1.000000 , mantisa 0.500000
+1.5: parte entera 1.000000, mantisa 0.500000
 
 * Listado de constantes caracter enumerados:
 1) 'a'
