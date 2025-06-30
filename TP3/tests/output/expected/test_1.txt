@@ -7,7 +7,7 @@ b: int, linea 16
 
 * Listado de funciones declaradas o definidas:
 potencia: definicion, input: float base, long exp, retorna: float, linea 1
-rutina: declaracion, input: int x , retorna: void, linea 11
+rutina: declaracion, input: int x, retorna: void, linea 11
 main: definicion, input: void, retorna: int, linea 13
 rutina: definicion, input: int x, retorna: void, linea 39
 
