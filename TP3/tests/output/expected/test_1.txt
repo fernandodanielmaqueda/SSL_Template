@@ -28,7 +28,7 @@ return: linea 36, columna 5
 do/while: linea 40, columna 5
 if/else: linea 45, columna 5
 
-* Listado de estructuras sintácticas no reconocidas
+* Listado de estructuras sintacticas no reconocidas:
 "j = a;": linea 9
 
 * Listado de cadenas no reconocidas:
