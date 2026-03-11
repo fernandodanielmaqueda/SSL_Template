@@ -46,3 +46,17 @@ jobs:
     - name: Clean up
       working-directory: ./TP4
       run: rm -f ./bin/tp4 ./tests/output/test_*.txt ./tests/output/expected/test_*_clean.txt
+
+  llm-review:
+    name: Revisión LLM
+    needs: test
+    if: success() && github.event_name == 'pull_request'
+    uses: ./.github/workflows/llm_review.yml
+    with:
+      tp_dir:      "TP4"
+      rubric_file: ".github/rubrics/tp4_rubric.md"
+      pr_number:   ${{ github.event.pull_request.number }}
+      base_sha:    ${{ github.event.pull_request.base.sha }}
+      head_sha:    ${{ github.event.pull_request.head.sha }}
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

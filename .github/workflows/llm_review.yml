@@ -1,0 +1,67 @@
+name: LLM Code Review
+
+# Workflow reutilizable: es llamado por cada test_tpN.yml luego de que los tests pasen.
+# Recolecta archivos fuente + estadísticas git y publica un comentario en el PR.
+
+on:
+  workflow_call:
+    inputs:
+      tp_dir:
+        description: "Directorio del TP (ej: TP1)"
+        required: true
+        type: string
+      rubric_file:
+        description: "Rúbrica a usar (ej: .github/rubrics/tp1_rubric.md)"
+        required: true
+        type: string
+      pr_number:
+        description: "Número del Pull Request"
+        required: true
+        type: string
+      base_sha:
+        description: "SHA base del PR (tip de main al abrir el PR)"
+        required: true
+        type: string
+      head_sha:
+        description: "SHA HEAD de la rama del PR"
+        required: true
+        type: string
+    secrets:
+      ANTHROPIC_API_KEY:
+        required: true
+
+jobs:
+  llm-review:
+    name: Revisión con LLM (${{ inputs.tp_dir }})
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write  # necesario para publicar comentarios en el PR
+      contents: read
+
+    steps:
+      - name: Checkout completo (historial git necesario)
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # historial completo para git log/shortlog/diff
+
+      - name: Fetch rama base (main)
+        run: git fetch origin main --no-tags
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias Python
+        run: pip install anthropic requests
+
+      - name: Ejecutar revisión LLM
+        run: python .github/scripts/llm_review.py "${{ inputs.tp_dir }}" "${{ inputs.rubric_file }}"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:         ${{ inputs.pr_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          BASE_SHA:          ${{ inputs.base_sha }}
+          HEAD_SHA:          ${{ inputs.head_sha }}
