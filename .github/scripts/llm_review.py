@@ -227,6 +227,12 @@ Tono y estilo de la devolución:
 - Sé concreto pero conciso: no hace falta escribir párrafos extensos.
 - El cierre debe ser alentador, reconociendo el esfuerzo del grupo.
 
+Jerarquía de criterios en la rúbrica — es FUNDAMENTAL que la decisión global respete esto:
+- **[OBLIGATORIO — crítico]**: Son condiciones sine qua non. Si cualquiera de estos no se cumple, la entrega es ❌ Desaprobada, sin excepción. Señalalo claramente pero sin dramatismo.
+- **[OBLIGATORIO]**: Requisitos del enunciado. El incumplimiento de varios de estos también lleva a ❌ Desaprobado. Uno solo con desvío menor puede ameritar ⚠️ Requiere revisión docente.
+- **[Buenas prácticas]**: Son deseables y enriquecen la entrega, pero **no determinan la aprobación**. Mencionálas como oportunidades de mejora, no como déficits. Una entrega puede estar ✅ Aprobada aunque alguna buena práctica no esté perfectamente implementada.
+- **README.md**: Importante pero secundario. Su ausencia o incompletitud no desaprueba por sí sola; sí merece una mención constructiva.
+
 Formato:
 - Markdown compatible con GitHub (se renderiza en la interfaz del PR).
 - Tablas Markdown (`| col | col |`) para información tabular.
@@ -307,11 +313,11 @@ Respondé **únicamente** con el contenido Markdown del comentario, sin ningún 
 
 ### Evaluación de rúbrica
 
-| # | Criterio | Estado | Comentario |
-|---|---|---|---|
-| [N] | [nombre del criterio] | [✅ / ❌ / ⚠️] | [observación breve y constructiva; si aplica, mencioná archivo:línea] |
+| # | Criterio | Peso | Estado | Comentario |
+|---|---|---|---|---|
+| [N] | [nombre del criterio] | [🔴 Crítico / 🟠 Obligatorio / 🟢 Buena práctica] | [✅ / ❌ / ⚠️] | [observación breve y constructiva; si aplica, mencioná archivo:línea] |
 
-*(una fila por cada criterio — cubrí TODOS)*
+*(una fila por cada criterio — cubrí TODOS; el Peso debe reflejar exactamente la etiqueta de la rúbrica)*
 
 ---
 
