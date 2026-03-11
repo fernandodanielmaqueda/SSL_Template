@@ -30,6 +30,27 @@ on:
       ANTHROPIC_API_KEY:
         required: true
 
+  # Permite re-ejecutar manualmente en caso de error de la API
+  workflow_dispatch:
+    inputs:
+      tp_dir:
+        description: "Directorio del TP (ej: TP1)"
+        required: true
+        default: "TP1"
+      rubric_file:
+        description: "Rúbrica (ej: .github/rubrics/tp1_rubric.md)"
+        required: true
+        default: ".github/rubrics/tp1_rubric.md"
+      pr_number:
+        description: "Número del Pull Request a comentar"
+        required: true
+      base_sha:
+        description: "SHA base del PR"
+        required: true
+      head_sha:
+        description: "SHA HEAD de la rama del PR"
+        required: true
+
 jobs:
   llm-review:
     name: Revisión con LLM (${{ inputs.tp_dir }})
@@ -59,6 +80,7 @@ jobs:
       - name: Ejecutar revisión LLM
         run: python .github/scripts/llm_review.py "${{ inputs.tp_dir }}" "${{ inputs.rubric_file }}"
         env:
+          # workflow_call recibe el secret como parámetro; workflow_dispatch lo lee del repo
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER:         ${{ inputs.pr_number }}

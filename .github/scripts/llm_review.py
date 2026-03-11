@@ -16,6 +16,7 @@ Variables de entorno requeridas:
 import os
 import sys
 import subprocess
+import time
 import anthropic
 import requests
 from pathlib import Path
@@ -342,6 +343,51 @@ uso de Co-authored-by, y cualquier señal de alerta relevante para el docente.]
 
 
 # ---------------------------------------------------------------------------
+# Llamada a la API con reintentos
+# ---------------------------------------------------------------------------
+MAX_RETRIES = 3
+RETRY_DELAY_SECONDS = 60
+
+
+def call_llm_with_retries(client, prompt: str) -> str:
+    """
+    Llama a la API de Anthropic con hasta MAX_RETRIES intentos.
+    Espera RETRY_DELAY_SECONDS entre intentos en caso de error transitorio
+    (rate limit, error de servidor, timeout).
+    Lanza la excepción final si todos los intentos fallan.
+    """
+    last_exc = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            print(f"   Intento {attempt}/{MAX_RETRIES}...")
+            response = client.messages.create(
+                model=MODEL,
+                max_tokens=MAX_TOKENS_OUTPUT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response
+        except anthropic.AuthenticationError as e:
+            # API key inválida — no tiene sentido reintentar
+            raise RuntimeError(
+                "API key de Anthropic inválida o faltante. "
+                "Verificá el secret ANTHROPIC_API_KEY en el repositorio."
+            ) from e
+        except (anthropic.RateLimitError, anthropic.APIStatusError,
+                anthropic.APIConnectionError, anthropic.APITimeoutError) as e:
+            last_exc = e
+            if attempt < MAX_RETRIES:
+                print(f"   ⚠️  Error transitorio ({type(e).__name__}): {e}")
+                print(f"   Reintentando en {RETRY_DELAY_SECONDS}s...")
+                time.sleep(RETRY_DELAY_SECONDS)
+            else:
+                print(f"   ❌ Falló en todos los {MAX_RETRIES} intentos.")
+    raise RuntimeError(
+        f"La API de Anthropic falló tras {MAX_RETRIES} intentos. "
+        f"Último error: {last_exc}"
+    ) from last_exc
+
+
+# ---------------------------------------------------------------------------
 # Publicación del comentario en el PR
 # ---------------------------------------------------------------------------
 def post_pr_comment(pr_number: str, repo: str, token: str, body: str) -> None:
@@ -411,16 +457,34 @@ def main():
     if int(git_stats["excluded_count"]) > 0:
         print(f"   Commits de docentes excluidos: {git_stats['excluded_count']}")
 
-    # Llamar a la API
-    print(f"🤖 Llamando a {MODEL}...")
+    # Llamar a la API (con reintentos)
+    print(f"🤖 Llamando a {MODEL} (hasta {MAX_RETRIES} intentos)...")
     prompt = build_prompt(tp_dir, rubric, source_files, readme, git_stats)
 
     client = anthropic.Anthropic(api_key=env["ANTHROPIC_API_KEY"])
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=MAX_TOKENS_OUTPUT,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    try:
+        response = call_llm_with_retries(client, prompt)
+    except RuntimeError as e:
+        # Todos los reintentos fallaron — publicar comentario de error en el PR
+        error_body = (
+            f"## Revisión Automática — {tp_dir}\n\n"
+            f"> ⚠️ La revisión LLM no pudo completarse.\n\n"
+            f"**Error:** `{e}`\n\n"
+            f"El docente puede re-ejecutar la revisión manualmente desde "
+            f"[Actions → Revisión LLM]"
+            f"(../../actions/workflows/llm_review.yml) "
+            f"usando **workflow_dispatch**.\n\n"
+            f"---\n*Revisión generada automáticamente — orientativa.*"
+        )
+        print(f"❌ {e}")
+        print("💬 Publicando comentario de error en el PR...")
+        post_pr_comment(
+            env["PR_NUMBER"],
+            env["GITHUB_REPOSITORY"],
+            env["GITHUB_TOKEN"],
+            error_body,
+        )
+        sys.exit(1)
 
     comment = response.content[0].text
     usage = response.usage
