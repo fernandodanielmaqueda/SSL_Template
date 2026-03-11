@@ -75,6 +75,26 @@ def collect_source_files(tp_dir: str) -> dict:
     return files
 
 
+def load_excluded_authors(config_file: str = ".github/config/docentes.txt") -> set:
+    """
+    Carga la lista de usernames/nombres a excluir del análisis de colaboración.
+    Se compara (case-insensitive) contra nombre y email de cada commit.
+    """
+    path = Path(config_file)
+    if not path.exists():
+        return set()
+    return {
+        line.strip().lower()
+        for line in path.read_text().splitlines()
+        if line.strip() and not line.startswith("#")
+    }
+
+
+def is_excluded(name: str, email: str, excluded: set) -> bool:
+    name_l, email_l = name.lower(), email.lower()
+    return any(ex in name_l or ex in email_l for ex in excluded)
+
+
 def collect_readme(tp_dir: str) -> str:
     readme = Path(tp_dir) / "README.md"
     if readme.exists():
@@ -96,18 +116,82 @@ def git(args: list) -> str:
         return f"*(error al ejecutar git: {e})*"
 
 
-def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str) -> dict:
+def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
+                      excluded: set) -> dict:
+    """
+    Recolecta estadísticas git del PR filtrando autores excluidos (docentes).
+    Usa formato estructurado para parsear y filtrar antes de enviar al LLM.
+    """
     ref = f"{base_sha}..{head_sha}"
     diff_ref = f"{base_sha}...{head_sha}"
+
+    # Obtener todos los commits con datos estructurados para filtrar
+    raw_log = git(["log", ref, "--no-merges",
+                   "--format=DELIM|%h|%an|%ae|%ai|%s"])
+
+    # Parsear y filtrar por autores excluidos
+    student_commits = []
+    excluded_count = 0
+    for line in raw_log.splitlines():
+        if not line.startswith("DELIM|"):
+            continue
+        parts = line.split("|", 5)
+        if len(parts) < 6:
+            continue
+        _, sha, name, email, date, subject = parts
+        if is_excluded(name, email, excluded):
+            excluded_count += 1
+            continue
+        student_commits.append({
+            "sha": sha, "name": name, "email": email,
+            "date": date[:10], "subject": subject
+        })
+
+    # Reconstruir shortlog solo con commits de alumnos
+    author_counts = {}
+    for c in student_commits:
+        author_counts[c["name"]] = author_counts.get(c["name"], 0) + 1
+    shortlog = "\n".join(
+        f"  {count}\t{name}"
+        for name, count in sorted(author_counts.items(), key=lambda x: -x[1])
+    ) or "*(sin commits de alumnos)*"
+
+    # Log legible para el LLM
+    commit_log = "\n".join(
+        f"COMMIT {c['sha']} | {c['name']} | {c['date']} | {c['subject']}"
+        for c in student_commits
+    ) or "*(sin commits de alumnos)*"
+
+    # Numstat filtrado: reconstruir por autor
+    raw_numstat = git(["log", ref, "--no-merges",
+                       "--numstat", "--format=>>>AUTHOR:%an|%ae"])
+    filtered_numstat = []
+    include = False
+    for line in raw_numstat.splitlines():
+        if line.startswith(">>>AUTHOR:"):
+            parts = line[len(">>>AUTHOR:"):].split("|", 1)
+            name = parts[0] if parts else ""
+            email = parts[1] if len(parts) > 1 else ""
+            include = not is_excluded(name, email, excluded)
+            if include:
+                filtered_numstat.append(f">>> {name}")
+        elif include and line.strip():
+            filtered_numstat.append(line)
+
+    # Co-authored-by (solo mensajes de commits de alumnos)
+    student_shas = [c["sha"] for c in student_commits]
+    coauthors = ""
+    if student_shas:
+        coauthors = git(["log", "--no-walk"] + student_shas + ["--format=%B"])
+
     return {
-        "total_commits": git(["rev-list", "--count", "--no-merges", ref]),
-        "shortlog":      git(["shortlog", ref, "-sn", "--no-merges"]),
-        "commit_log":    git(["log", ref, "--no-merges",
-                              "--format=COMMIT %h | %an | %ai | %s"]),
-        "numstat":       git(["log", ref, "--no-merges",
-                              "--numstat", "--format=>>> %an"]),
-        "coauthors":     git(["log", ref, "--no-merges", "--format=%B"]),
-        "diff_stat":     git(["diff", diff_ref, "--stat", "--", tp_dir]),
+        "total_commits":    str(len(student_commits)),
+        "excluded_count":   str(excluded_count),
+        "shortlog":         shortlog,
+        "commit_log":       commit_log,
+        "numstat":          "\n".join(filtered_numstat) or "*(sin datos)*",
+        "coauthors":        coauthors,
+        "diff_stat":        git(["diff", diff_ref, "--stat", "--", tp_dir]),
     }
 
 
@@ -162,7 +246,7 @@ El comentario debe estar escrito íntegramente en **Markdown compatible con GitH
 
 ## DATOS GIT DEL PULL REQUEST
 
-**Total de commits (sin merges):** {git_stats["total_commits"]}
+**Commits de alumnos analizados:** {git_stats["total_commits"]} (commits de docentes excluidos del análisis: {git_stats["excluded_count"]})
 
 **Commits por integrante:**
 ```
@@ -315,11 +399,17 @@ def main():
         print(f"❌ No se encontró el archivo de rúbrica: {rubric_file}")
         sys.exit(1)
 
+    excluded = load_excluded_authors()
+    if excluded:
+        print(f"🚫 Autores excluidos del análisis: {sorted(excluded)}")
+
     base_sha = env["BASE_SHA"]
     head_sha = env["HEAD_SHA"]
     print(f"🔍 Recolectando estadísticas git ({base_sha[:7]}..{head_sha[:7]})...")
-    git_stats = collect_git_stats(base_sha, head_sha, tp_dir)
-    print(f"   Commits en el PR: {git_stats['total_commits']}")
+    git_stats = collect_git_stats(base_sha, head_sha, tp_dir, excluded)
+    print(f"   Commits de alumnos: {git_stats['total_commits']}")
+    if int(git_stats["excluded_count"]) > 0:
+        print(f"   Commits de docentes excluidos: {git_stats['excluded_count']}")
 
     # Llamar a la API
     print(f"🤖 Llamando a {MODEL}...")
