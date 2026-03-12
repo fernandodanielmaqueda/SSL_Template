@@ -339,15 +339,17 @@ Respondé **únicamente** con el contenido Markdown del comentario, sin ningún 
 |---|---|---|---|---|
 | [nombre] | [N] | [+X / -Y] | [fecha] | [✅ Activa / ⚠️ Baja / ❌ Sin commits] |
 
-**Detalle de commits:**
+**Calidad de los commits:**
 
-| SHA | Autor | Mensaje | Tipo |
-|---|---|---|---|
-| `[sha]` | [autor] | [mensaje] | [✅ Sustancial / ⚠️ Menor / ❓ A revisar] |
+| SHA | Autor | Mensaje | Atómico | Descripción |
+|---|---|---|---|---|
+| `[sha]` | [autor] | [mensaje] | [✅ Sí / ⚠️ Parcial / ❌ No] | [✅ Clara / ⚠️ Mejorable / ❌ Genérica] |
 
-*(máximo 20 commits)*
+*(máximo 20 commits. "Atómico" = el commit tiene un propósito único y cohesivo. "Descripción" = el mensaje transmite claramente qué se hizo y por qué.)*
 
-[Párrafo de análisis del equipo: cómo se distribuyó el trabajo, si hubo colaboración pareja, patrones de trabajo (gradual vs. concentrado al final), uso de Co-authored-by, y cualquier observación relevante para el docente. Tono descriptivo, no acusatorio.]
+**Análisis del equipo:**
+
+[Párrafo que cubra: distribución del trabajo entre integrantes, patrón temporal (gradual vs. todo al final), uso de Co-authored-by, y calidad general del historial de commits. Sobre los commits específicamente: ¿los mensajes son descriptivos o genéricos ("fix", "wip", "cambios")? ¿hay commits que agrupan demasiados cambios no relacionados? Si aplica, mencioná como buena práctica que cada commit debería representar un cambio cohesivo con un mensaje que explique el "qué" y el "por qué". Tono constructivo, no acusatorio.]
 
 ---
 
