@@ -117,6 +117,46 @@ def git(args: list) -> str:
         return f"*(error al ejecutar git: {e})*"
 
 
+def collect_per_commit_stats(base_sha: str, head_sha: str, excluded: set) -> dict:
+    """
+    Devuelve un dict sha -> {files, added, removed} para commits de alumnos.
+    Usa --numstat por commit para obtener las stats individuales.
+    """
+    ref = f"{base_sha}..{head_sha}"
+    raw = git(["log", ref, "--no-merges", "--numstat",
+               "--format=>>>COMMIT:%h|%an|%ae"])
+
+    stats = {}
+    current = None
+    include = False
+    f = a = r = 0
+
+    for line in raw.splitlines():
+        if line.startswith(">>>COMMIT:"):
+            if current and include:
+                stats[current] = {"files": f, "added": a, "removed": r}
+            parts = line[len(">>>COMMIT:"):].split("|", 2)
+            current = parts[0]
+            name  = parts[1] if len(parts) > 1 else ""
+            email = parts[2] if len(parts) > 2 else ""
+            include = not is_excluded(name, email, excluded)
+            f = a = r = 0
+        elif include and current and line.strip():
+            cols = line.split("\t", 2)
+            if len(cols) == 3:
+                try:
+                    a += int(cols[0]) if cols[0] != "-" else 0
+                    r += int(cols[1]) if cols[1] != "-" else 0
+                    f += 1
+                except ValueError:
+                    pass
+
+    if current and include:
+        stats[current] = {"files": f, "added": a, "removed": r}
+
+    return stats
+
+
 def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
                       excluded: set) -> dict:
     """
@@ -148,6 +188,9 @@ def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
             "date": date[:10], "subject": subject
         })
 
+    # Stats por commit (archivos y líneas)
+    per_commit = collect_per_commit_stats(base_sha, head_sha, excluded)
+
     # Reconstruir shortlog solo con commits de alumnos
     author_counts = {}
     for c in student_commits:
@@ -157,11 +200,17 @@ def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
         for name, count in sorted(author_counts.items(), key=lambda x: -x[1])
     ) or "*(sin commits de alumnos)*"
 
-    # Log legible para el LLM
-    commit_log = "\n".join(
-        f"COMMIT {c['sha']} | {c['name']} | {c['date']} | {c['subject']}"
-        for c in student_commits
-    ) or "*(sin commits de alumnos)*"
+    # Log legible para el LLM con stats por commit
+    def fmt_commit(c):
+        s = per_commit.get(c["sha"], {})
+        files = s.get("files", "?")
+        added = s.get("added", "?")
+        removed = s.get("removed", "?")
+        return (f"COMMIT {c['sha']} | {c['name']} | {c['date']} "
+                f"| {files} archivos | +{added} / -{removed} | {c['subject']}")
+
+    commit_log = "\n".join(fmt_commit(c) for c in student_commits) \
+        or "*(sin commits de alumnos)*"
 
     # Numstat filtrado: reconstruir por autor
     raw_numstat = git(["log", ref, "--no-merges",
@@ -226,6 +275,8 @@ Tono y estilo de la devolución:
 - Evitá un tono fiscalizador o burocrático. El objetivo es que el grupo aprenda, no que se sienta juzgado.
 - Sé concreto pero conciso: no hace falta escribir párrafos extensos.
 - El cierre debe ser alentador, reconociendo el esfuerzo del grupo.
+- Escribí de forma natural, como lo haría un docente real. Evitá frases que suenen formulaicas o automatizadas.
+- No uses el guión largo (—); reemplazalo por una coma, dos puntos, punto y coma o paréntesis según corresponda.
 
 Jerarquía de criterios en la rúbrica — es FUNDAMENTAL que la decisión global respete esto:
 - **[OBLIGATORIO — crítico]**: Son condiciones sine qua non. Si cualquiera de estos no se cumple, la entrega es ❌ Desaprobada, sin excepción. Señalalo claramente pero sin dramatismo.
@@ -268,7 +319,7 @@ Formato:
 {git_stats["shortlog"]}
 ```
 
-**Detalle de commits (hash | autor | fecha | mensaje):**
+**Detalle de commits (hash | autor | fecha | archivos | lineas +/- | mensaje):**
 ```
 {git_stats["commit_log"]}
 ```
@@ -305,7 +356,7 @@ Respondé **únicamente** con el contenido Markdown del comentario, sin ningún 
 
 ---
 
-### Resultado: [reemplazar con ✅ Aprobado | ❌ Desaprobado | ⚠️ Requiere revisión docente]
+### Resultado: [reemplazar con ✅ Aprobado | ❌ Desaprobado | ⚠️ Para revisión docente]
 
 [2-3 oraciones explicando la decisión. Si es positivo, resaltá los puntos fuertes. Si hay problemas, mencioná cuáles son los más relevantes sin ser alarmista.]
 
@@ -315,7 +366,7 @@ Respondé **únicamente** con el contenido Markdown del comentario, sin ningún 
 
 | # | Criterio | Peso | Estado | Comentario |
 |---|---|---|---|---|
-| [N] | [nombre del criterio] | [🔴 Crítico / 🟠 Obligatorio / 🟢 Buena práctica] | [✅ / ❌ / ⚠️] | [observación breve y constructiva; si aplica, mencioná archivo:línea] |
+| [N] | [nombre del criterio] | [🔴 Crítico / 🟠 Obligatorio / 🟢 Buena práctica] | [✅ Cumple / ⚠️ Cumple parcialmente / ❌ No cumple] | [observación breve y constructiva; si aplica, mencioná archivo:línea] |
 
 *(una fila por cada criterio — cubrí TODOS; el Peso debe reflejar exactamente la etiqueta de la rúbrica)*
 
@@ -341,11 +392,11 @@ Respondé **únicamente** con el contenido Markdown del comentario, sin ningún 
 
 **Calidad de los commits:**
 
-| SHA | Autor | Mensaje | Atómico | Descripción |
-|---|---|---|---|---|
-| `[sha]` | [autor] | [mensaje] | [✅ Sí / ⚠️ Parcial / ❌ No] | [✅ Clara / ⚠️ Mejorable / ❌ Genérica] |
+| SHA | Autor | Archivos | Líneas +/- | Mensaje | Atómico | Descripción |
+|---|---|---|---|---|---|---|
+| `[sha]` | [autor] | [N] | [+X / -Y] | [mensaje] | [✅ Sí / ⚠️ Parcial / ❌ No] | [✅ Clara / ⚠️ Mejorable / ❌ Genérica] |
 
-*(máximo 20 commits. "Atómico" = el commit tiene un propósito único y cohesivo. "Descripción" = el mensaje transmite claramente qué se hizo y por qué.)*
+*(máximo 20 commits. Tomá los valores de archivos y líneas +/- directamente del detalle de commits provisto arriba. "Atómico" = el commit tiene un propósito único y cohesivo. "Descripción" = el mensaje transmite claramente qué se hizo y por qué.)*
 
 **Análisis del equipo:**
 
