@@ -115,39 +115,87 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: List directory structure
-      run: ls -R
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential flex libfl-dev
 
-    - name: Display installed versions
-      run: |
-        git --version
-        make --version
-        gcc --version
-        flex --version
-
     - name: Compile code with make
+      id: compile
       working-directory: ./TP2
       run: |
-        make
+        make 2>&1 | tee /tmp/compile-output.txt
+        exit ${PIPESTATUS[0]}
 
     - name: Run test script
+      id: run_tests
       working-directory: ./TP2
       run: |
         chmod +x ./tests/run_testsuite.sh
-        ./tests/run_testsuite.sh './bin/tp2'
+        ./tests/run_testsuite.sh './bin/tp2' 2>&1 | tee /tmp/test-output.txt
+        exit ${PIPESTATUS[0]}
 
     - name: Clean up
       working-directory: ./TP2
       run: rm -f ./bin/tp2 ./tests/output/test_*.txt ./tests/output/expected/test_*_clean.txt
+
+    - name: Comentar error en el PR
+      if: failure() && github.event_name == 'pull_request'
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        MARKER="<!-- ssl-test-failure -->"
+
+        if [ "${{ steps.compile.outcome }}" = "failure" ]; then
+          STAGE="compilación"
+          OUTPUT=$(cat /tmp/compile-output.txt 2>/dev/null | tail -60 || echo "(sin output)")
+          HINT="Revisá los errores del compilador y asegurate de que el \`Makefile\` esté correcto."
+        else
+          STAGE="tests"
+          OUTPUT=$(cat /tmp/test-output.txt 2>/dev/null | tail -60 || echo "(sin output)")
+          HINT="Revisá los casos de prueba que fallaron y compará la salida esperada con la obtenida."
+        fi
+
+        {
+          echo "## ❌ Falló en $STAGE — TP2"
+          echo ""
+          echo "> Corregí los errores y pusheá nuevamente para volver a correr los checks."
+          echo ""
+          echo "### Output"
+          echo '```'
+          echo "$OUTPUT"
+          echo '```'
+          echo ""
+          echo "> 💡 $HINT"
+          echo ""
+          echo "---"
+          echo "*Ver logs completos en [Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+          echo ""
+          echo "$MARKER"
+        } > pr-failure-comment.md
+
+        EXISTING_ID=$(gh api \
+          "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+          --jq ".[] | select(.body | contains(\"$MARKER\")) | .id" | head -1)
+
+        if [ -n "$EXISTING_ID" ]; then
+          gh api --method PATCH \
+            "repos/${{ github.repository }}/issues/comments/$EXISTING_ID" \
+            -f body="$(cat pr-failure-comment.md)"
+        else
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file pr-failure-comment.md
+        fi
 
   llm-review:
     name: Revisión LLM
