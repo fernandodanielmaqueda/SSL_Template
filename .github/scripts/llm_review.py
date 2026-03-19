@@ -481,22 +481,81 @@ def call_llm_with_retries(client, prompt: str) -> str:
     ) from last_exc
 
 
+# Marcador HTML invisible que identifica el comentario del bot en el PR.
+# Permite encontrarlo y actualizarlo en lugar de crear uno nuevo en cada push.
+LLM_REVIEW_MARKER = "<!-- ssl-llm-review -->"
+
+
 # ---------------------------------------------------------------------------
-# Publicación del comentario en el PR
+# Publicación / actualización del comentario en el PR
 # ---------------------------------------------------------------------------
-def post_pr_comment(pr_number: str, repo: str, token: str, body: str) -> None:
-    url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
-    headers = {
+def _gh_headers(token: str) -> dict:
+    return {
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json",
     }
-    r = requests.post(url, headers=headers, json={"body": body}, timeout=30)
-    if r.status_code == 201:
-        print(f"✅ Comentario publicado correctamente en PR #{pr_number}")
+
+
+def find_bot_comment(pr_number: str, repo: str, token: str) -> str | None:
+    """
+    Busca el comentario del bot (contiene LLM_REVIEW_MARKER) en el PR.
+    Devuelve el ID del comentario como string, o None si no existe.
+    Pagina automáticamente en caso de PRs con muchos comentarios.
+    """
+    headers = _gh_headers(token)
+    page = 1
+    while True:
+        url = (f"https://api.github.com/repos/{repo}/issues"
+               f"/{pr_number}/comments")
+        r = requests.get(url, headers=headers,
+                         params={"per_page": 100, "page": page}, timeout=30)
+        if r.status_code != 200:
+            return None
+        comments = r.json()
+        if not comments:
+            break
+        for c in comments:
+            if LLM_REVIEW_MARKER in c.get("body", ""):
+                return str(c["id"])
+        if len(comments) < 100:
+            break
+        page += 1
+    return None
+
+
+def upsert_pr_comment(pr_number: str, repo: str, token: str,
+                      body: str) -> None:
+    """
+    Actualiza el comentario del bot si ya existe; si no, lo crea.
+    Siempre incluye LLM_REVIEW_MARKER al final para poder identificarlo.
+    """
+    marked_body = f"{body}\n{LLM_REVIEW_MARKER}"
+    headers = _gh_headers(token)
+
+    comment_id = find_bot_comment(pr_number, repo, token)
+    if comment_id:
+        url = (f"https://api.github.com/repos/{repo}"
+               f"/issues/comments/{comment_id}")
+        r = requests.patch(url, headers=headers,
+                           json={"body": marked_body}, timeout=30)
+        if r.status_code == 200:
+            print(f"✅ Comentario actualizado en PR #{pr_number} "
+                  f"(id: {comment_id})")
+        else:
+            print(f"❌ Error al actualizar comentario: HTTP {r.status_code}")
+            print(r.text)
+            sys.exit(1)
     else:
-        print(f"❌ Error al publicar comentario: HTTP {r.status_code}")
-        print(r.text)
-        sys.exit(1)
+        url = (f"https://api.github.com/repos/{repo}"
+               f"/issues/{pr_number}/comments")
+        r = requests.post(url, headers=headers,
+                          json={"body": marked_body}, timeout=30)
+        if r.status_code == 201:
+            print(f"✅ Comentario publicado en PR #{pr_number}")
+        else:
+            print(f"❌ Error al publicar comentario: HTTP {r.status_code}")
+            print(r.text)
+            sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -579,7 +638,7 @@ def main():
         )
         print(f"❌ {e}")
         print("💬 Publicando comentario de error en el PR...")
-        post_pr_comment(
+        upsert_pr_comment(
             env["PR_NUMBER"],
             env["GITHUB_REPOSITORY"],
             env["GITHUB_TOKEN"],
@@ -593,9 +652,9 @@ def main():
     print(f"   Tokens: {usage.input_tokens:,} input / {usage.output_tokens:,} output")
     print(f"   Costo estimado: ~${cost_usd:.4f} USD")
 
-    # Publicar comentario
-    print(f"💬 Publicando comentario en PR #{env['PR_NUMBER']}...")
-    post_pr_comment(
+    # Publicar o actualizar comentario
+    print(f"💬 Publicando/actualizando comentario en PR #{env['PR_NUMBER']}...")
+    upsert_pr_comment(
         env["PR_NUMBER"],
         env["GITHUB_REPOSITORY"],
         env["GITHUB_TOKEN"],

@@ -79,6 +79,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        MARKER="<!-- ssl-quality-report -->"
         {
           echo "## 📋 Reporte de Calidad — TP1"
           echo ""
@@ -91,10 +92,25 @@ jobs:
           echo ""
           echo "---"
           echo "*Reporte informativo — no bloquea el PR.*"
+          echo ""
+          echo "$MARKER"
         } > pr-quality-comment.md
-        gh pr comment "${{ github.event.pull_request.number }}" \
-          --repo "${{ github.repository }}" \
-          --body-file pr-quality-comment.md
+
+        EXISTING_ID=$(gh api \
+          "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+          --jq ".[] | select(.body | contains(\"$MARKER\")) | .id" | head -1)
+
+        if [ -n "$EXISTING_ID" ]; then
+          echo "Actualizando comentario existente #$EXISTING_ID..."
+          gh api --method PATCH \
+            "repos/${{ github.repository }}/issues/comments/$EXISTING_ID" \
+            -f body="$(cat pr-quality-comment.md)"
+        else
+          echo "Creando nuevo comentario..."
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file pr-quality-comment.md
+        fi
 
   test:
     runs-on: ubuntu-latest
