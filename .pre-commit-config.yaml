@@ -1,32 +1,42 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0  # versión actual del repositorio
+    rev: v5.0.0
     hooks:
-      - id: check-added-large-files  # Verifica si se han añadido archivos grandes
-      - id: check-yaml  # Verifica que los archivos YAML sean válidos
-      - id: end-of-file-fixer  # Asegura que haya una nueva línea al final de los archivos
-      - id: trailing-whitespace  # Elimina espacios en blanco al final de las líneas
+      - id: check-added-large-files  # Evita commitear binarios o archivos pesados
+      - id: check-yaml               # Valida que los archivos YAML sean correctos
+      - id: end-of-file-fixer        # Asegura que haya una línea en blanco al final
+      - id: trailing-whitespace      # Elimina espacios en blanco al final de las líneas
 
   - repo: local
     hooks:
-      - id: cppcheck
-        name: cppcheck
-        entry: cppcheck --enable=warning --force --error-exitcode=1 --language=c
-        language: system
-        types: [c]
-        files: \.(c|cpp|h|hpp)$
-
-      - id: cpplint
-        name: cpplint
-        entry: cpplint
-        language: python
-        types: [c]
-        files: \.(c|cpp|h|hpp)$
-        args: [--filter=-legal/copyright]
-
       - id: clang-format
-        name: clang-format
+        name: clang-format (formato automático)
         entry: clang-format -i
         language: system
         types: [c]
-        files: \.(c|cpp|h|hpp)$
+        files: \.(c|h)$
+        # Aplica el estilo definido en .clang-format (Google).
+        # Si el archivo cambia, pre-commit lo reporta para que hagas git add y reintentes.
+
+      - id: cppcheck
+        name: cppcheck (análisis estático)
+        entry: cppcheck --enable=warning,style,performance --force
+          --suppress=missingIncludeSystem
+          --template={file}:{line}:\ [{severity}]\ {message}\ ({id})
+          --language=c
+        language: system
+        types: [c]
+        files: \.(c|h)$
+        # Informativo: reporta problemas pero no bloquea el commit.
+        # En CI se ejecuta de la misma forma para dar contexto al revisor LLM.
+        verbose: true
+
+      - id: cpplint
+        name: cpplint (estilo Google)
+        entry: cpplint
+        language: python
+        types: [c]
+        files: \.(c|h)$
+        args: [--filter=-legal/copyright,-build/include_subdir]
+        # Requiere: pip install cpplint
+        # Verifica convenciones de estilo del Google C++ Style Guide.

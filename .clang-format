@@ -1,0 +1,36 @@
+# Estilo de formato para la cátedra SSL — UTN FRBA
+# Basado en Google C++ Style Guide, adaptado para C
+# Más info: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+BasedOnStyle: Google
+Language: Cpp
+
+# Indentación
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ContinuationIndentWidth: 4
+
+# Longitud de línea
+ColumnLimit: 80
+
+# Llaves y bloques
+BreakBeforeBraces: Attach   # abre llave en la misma línea que la sentencia
+IndentCaseLabels: true
+
+# Espaciado
+SpaceBeforeParens: ControlStatements   # espacio antes de ( en if/for/while
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Punteros y referencias: int* p  (estilo Google: pegado al tipo)
+PointerAlignment: Left
+
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# Comentarios
+ReflowComments: true
+SpacesBeforeTrailingComments: 2
