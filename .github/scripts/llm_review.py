@@ -103,6 +103,21 @@ def collect_readme(tp_dir: str) -> str:
     return "*(README.md no encontrado)*"
 
 
+def collect_quality_report() -> str:
+    """
+    Lee el reporte de calidad generado por el job quality (clang-format + cppcheck).
+    La ruta viene de la variable de entorno QUALITY_REPORT_PATH.
+    Devuelve cadena vacía si no existe o si la variable no está seteada.
+    """
+    path_str = os.environ.get("QUALITY_REPORT_PATH", "")
+    if not path_str:
+        return ""
+    path = Path(path_str)
+    if not path.exists():
+        return ""
+    return path.read_text(errors="replace")
+
+
 # ---------------------------------------------------------------------------
 # Estadísticas git
 # ---------------------------------------------------------------------------
@@ -249,7 +264,7 @@ def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
 # Construcción del prompt
 # ---------------------------------------------------------------------------
 def build_prompt(tp_dir: str, rubric: str, source_files: dict,
-                 readme: str, git_stats: dict) -> str:
+                 readme: str, git_stats: dict, quality_report: str = "") -> str:
 
     # Sección de archivos fuente
     sources_md = ""
@@ -264,6 +279,10 @@ def build_prompt(tp_dir: str, rubric: str, source_files: dict,
     coauthors_trimmed = git_stats["coauthors"][:3000]
     if len(git_stats["coauthors"]) > 3000:
         coauthors_trimmed += "\n*(mensajes truncados)*"
+
+    quality_section = quality_report if quality_report else (
+        "*(No disponible — el job de calidad no generó reporte o no se ejecutó)*"
+    )
 
     return f"""Sos un docente universitario de la materia "Sintaxis y Semántica de los Lenguajes" (SSL) de UTN-FRBA.
 Tu tarea es revisar la entrega grupal de {tp_dir} y escribir una **devolución para los estudiantes** como comentario en su Pull Request de GitHub.
@@ -338,6 +357,12 @@ Formato:
 ```
 {coauthors_trimmed}
 ```
+
+---
+
+## REPORTE DE CALIDAD AUTOMATIZADO (formato y análisis estático)
+
+{quality_section}
 
 ---
 
@@ -526,9 +551,16 @@ def main():
     if int(git_stats["excluded_count"]) > 0:
         print(f"   Commits de docentes excluidos: {git_stats['excluded_count']}")
 
+    quality_report = collect_quality_report()
+    if quality_report:
+        print("📊 Reporte de calidad cargado (clang-format + cppcheck)")
+    else:
+        print("📊 Reporte de calidad no disponible (se omite del prompt)")
+
     # Llamar a la API (con reintentos)
     print(f"🤖 Llamando a {MODEL} (hasta {MAX_RETRIES} intentos)...")
-    prompt = build_prompt(tp_dir, rubric, source_files, readme, git_stats)
+    prompt = build_prompt(tp_dir, rubric, source_files, readme, git_stats,
+                          quality_report)
 
     client = anthropic.Anthropic(api_key=env["ANTHROPIC_API_KEY"])
     try:

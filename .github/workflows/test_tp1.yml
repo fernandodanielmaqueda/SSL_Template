@@ -9,6 +9,66 @@ on:
   workflow_dispatch:
 
 jobs:
+  quality:
+    name: Calidad de código (informativo)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Instalar herramientas de calidad
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y clang-format cppcheck
+
+    - name: Verificar formato (clang-format)
+      continue-on-error: true
+      run: |
+        echo "## Verificación de formato (clang-format)" > quality-report.md
+        echo "" >> quality-report.md
+        FILES=$(find ./TP1 -name '*.c' -o -name '*.h' | grep -v '/bin/' | grep -v 'lex\.yy' | grep -v '\.tab\.' | sort)
+        if [ -z "$FILES" ]; then
+          echo "*(No se encontraron archivos .c/.h)*" >> quality-report.md
+        else
+          ISSUES=$(echo "$FILES" | xargs clang-format --dry-run -Werror 2>&1 || true)
+          if [ -z "$ISSUES" ]; then
+            echo "✅ Todos los archivos cumplen el formato." >> quality-report.md
+          else
+            echo "⚠️ Archivos con desvíos de formato:" >> quality-report.md
+            echo "" >> quality-report.md
+            echo '```' >> quality-report.md
+            echo "$ISSUES" | head -100 >> quality-report.md
+            echo '```' >> quality-report.md
+          fi
+        fi
+
+    - name: Análisis estático (cppcheck)
+      continue-on-error: true
+      run: |
+        echo "" >> quality-report.md
+        echo "## Análisis estático (cppcheck)" >> quality-report.md
+        echo "" >> quality-report.md
+        RESULT=$(cppcheck --enable=warning,style,performance \
+          --suppress=missingIncludeSystem \
+          --template='{file}:{line}: [{severity}] {message} ({id})' \
+          ./TP1 2>&1 | grep -v '^$' | head -100 || true)
+        if [ -z "$RESULT" ]; then
+          echo "✅ Sin advertencias de cppcheck." >> quality-report.md
+        else
+          echo '```' >> quality-report.md
+          echo "$RESULT" >> quality-report.md
+          echo '```' >> quality-report.md
+        fi
+
+    - name: Subir reporte de calidad
+      uses: actions/upload-artifact@v4
+      with:
+        name: quality-report-TP1
+        path: quality-report.md
+        retention-days: 7
+
   test:
     runs-on: ubuntu-latest
 
@@ -47,14 +107,15 @@ jobs:
 
   llm-review:
     name: Revisión LLM
-    needs: test
-    if: success() && github.event_name == 'pull_request'
+    needs: [test, quality]
+    if: needs.test.result == 'success' && github.event_name == 'pull_request'
     uses: ./.github/workflows/llm_review.yml
     with:
-      tp_dir:      "TP1"
-      rubric_file: ".github/rubrics/tp1_rubric.md"
-      pr_number:   ${{ github.event.pull_request.number }}
-      base_sha:    ${{ github.event.pull_request.base.sha }}
-      head_sha:    ${{ github.event.pull_request.head.sha }}
+      tp_dir:           "TP1"
+      rubric_file:      ".github/rubrics/tp1_rubric.md"
+      pr_number:        ${{ github.event.pull_request.number }}
+      base_sha:         ${{ github.event.pull_request.base.sha }}
+      head_sha:         ${{ github.event.pull_request.head.sha }}
+      quality_artifact: "quality-report-TP1"
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
