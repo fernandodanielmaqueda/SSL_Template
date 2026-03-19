@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
 
+    permissions:
+      pull-requests: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -68,6 +71,29 @@ jobs:
         name: quality-report-TP2
         path: quality-report.md
         retention-days: 7
+
+    - name: Publicar reporte en el PR
+      if: github.event_name == 'pull_request'
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        {
+          echo "## 📋 Reporte de Calidad — TP2"
+          echo ""
+          echo "<details>"
+          echo "<summary>Ver detalles (clang-format + cppcheck)</summary>"
+          echo ""
+          cat quality-report.md
+          echo ""
+          echo "</details>"
+          echo ""
+          echo "---"
+          echo "*Reporte informativo — no bloquea el PR.*"
+        } > pr-quality-comment.md
+        gh pr comment "${{ github.event.pull_request.number }}" \
+          --repo "${{ github.repository }}" \
+          --body-file pr-quality-comment.md
 
   test:
     runs-on: ubuntu-latest
