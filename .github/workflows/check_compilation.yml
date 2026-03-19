@@ -1,9 +1,14 @@
 name: Check compilation
 
+# Intenta compilar todos los TPs que tengan código fuente.
+# No bloquea el PR (continue-on-error: true) — es informativo.
+# Los test_tpN.yml son los que realmente gatillan y bloquean por cambios en cada TP.
+
 on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,7 +19,47 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up dependencies
+    - name: Instalar dependencias
       run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc make flex bison
+        sudo apt-get update -qq
+        sudo apt-get install -y gcc make flex libfl-dev bison libbison-dev
+
+    - name: Compilar TP1
+      continue-on-error: true
+      run: |
+        if [ -d "TP1/src" ]; then
+          echo "── Compilando TP1 ──"
+          make -C TP1
+        else
+          echo "── TP1/src no encontrado, salteando ──"
+        fi
+
+    - name: Compilar TP2
+      continue-on-error: true
+      run: |
+        if [ -d "TP2/src" ]; then
+          echo "── Compilando TP2 ──"
+          make -C TP2
+        else
+          echo "── TP2/src no encontrado, salteando ──"
+        fi
+
+    - name: Compilar TP3
+      continue-on-error: true
+      run: |
+        if [ -d "TP3/src" ]; then
+          echo "── Compilando TP3 ──"
+          make -C TP3
+        else
+          echo "── TP3/src no encontrado, salteando ──"
+        fi
+
+    - name: Compilar TP4
+      continue-on-error: true
+      run: |
+        if [ -d "TP4/src" ]; then
+          echo "── Compilando TP4 ──"
+          make -C TP4
+        else
+          echo "── TP4/src no encontrado, salteando ──"
+        fi
