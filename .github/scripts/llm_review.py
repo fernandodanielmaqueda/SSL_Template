@@ -31,6 +31,16 @@ MAX_TOKENS_OUTPUT = 4096
 MAX_FILE_LINES = 500          # líneas máximas por archivo individual
 MAX_TOTAL_SOURCE_CHARS = 100_000  # ~25 K tokens de código fuente total
 
+# ---------------------------------------------------------------------------
+# Textos que aparecen en el prompt cuando faltan datos
+# Centralizados aquí para facilitar su edición sin buscar dentro de funciones
+# ---------------------------------------------------------------------------
+MSG_NO_SOURCES      = "*(No se encontraron archivos fuente)*"
+MSG_NO_QUALITY      = "*(No disponible — el job de calidad no generó reporte o no se ejecutó)*"
+MSG_COAUTHORS_TRUNC = "\n*(mensajes truncados)*"
+MSG_FILE_TRUNC      = "// ... [archivo truncado: se muestran {lines} de {total} líneas]"
+MSG_BUDGET_TRUNC    = "// ... [truncado por límite de presupuesto de tokens]"
+
 
 # ---------------------------------------------------------------------------
 # Recolección de archivos fuente
@@ -58,7 +68,7 @@ def collect_source_files(tp_dir: str) -> dict:
             lines = content.splitlines()
             if len(lines) > MAX_FILE_LINES:
                 content = "\n".join(lines[:MAX_FILE_LINES])
-                content += f"\n\n// ... [archivo truncado: se muestran {MAX_FILE_LINES} de {len(lines)} líneas]"
+                content += "\n\n" + MSG_FILE_TRUNC.format(lines=MAX_FILE_LINES, total=len(lines))
 
             files[str(f)] = content
 
@@ -71,7 +81,7 @@ def collect_source_files(tp_dir: str) -> dict:
             keep = max(50, int(len(lines) * ratio))
             if len(lines) > keep:
                 files[path] = "\n".join(lines[:keep])
-                files[path] += f"\n\n// ... [truncado por límite de presupuesto de tokens]"
+                files[path] += "\n\n" + MSG_BUDGET_TRUNC
 
     return files
 
@@ -292,77 +302,32 @@ def build_prompt(tp_dir: str, rubric: str, source_files: dict,
         lang = "c" if ext in {".c", ".h"} else "text"
         sources_md += f"\n#### `{path}`\n```{lang}\n{content}\n```\n"
     if not sources_md:
-        sources_md = "*(No se encontraron archivos fuente)*"
+        sources_md = MSG_NO_SOURCES
 
     # Limitar co-authored raw a 3000 chars para no desperdiciar tokens
     coauthors_trimmed = git_stats["coauthors"][:3000]
     if len(git_stats["coauthors"]) > 3000:
-        coauthors_trimmed += "\n*(mensajes truncados)*"
+        coauthors_trimmed += MSG_COAUTHORS_TRUNC
 
-    quality_section = quality_report if quality_report else (
-        "*(No disponible — el job de calidad no generó reporte o no se ejecutó)*"
+    quality_section = quality_report if quality_report else MSG_NO_QUALITY
+
+    data_section = (
+        _load_prompt("data_template.md")
+        .replace("{rubric}",          rubric)
+        .replace("{readme}",          readme)
+        .replace("{sources}",         sources_md)
+        .replace("{total_commits}",   git_stats["total_commits"])
+        .replace("{excluded_count}",  git_stats["excluded_count"])
+        .replace("{shortlog}",        git_stats["shortlog"])
+        .replace("{commit_log}",      git_stats["commit_log"])
+        .replace("{numstat}",         git_stats["numstat"])
+        .replace("{tp_dir}",          tp_dir)
+        .replace("{diff_stat}",       git_stats["diff_stat"])
+        .replace("{coauthors}",       coauthors_trimmed)
+        .replace("{quality_report}",  quality_section)
     )
 
-    return f"""{system}
-
----
-
-## RÚBRICA DE EVALUACIÓN
-
-{rubric}
-
----
-
-## README DEL TRABAJO (carátula / integrantes)
-
-{readme}
-
----
-
-## ARCHIVOS FUENTE ENTREGADOS
-
-{sources_md}
-
----
-
-## DATOS GIT DEL PULL REQUEST
-
-**Commits de alumnos analizados:** {git_stats["total_commits"]} (commits de docentes excluidos del análisis: {git_stats["excluded_count"]})
-
-**Commits por integrante:**
-```
-{git_stats["shortlog"]}
-```
-
-**Detalle de commits (hash | autor | fecha | archivos | lineas +/- | mensaje):**
-```
-{git_stats["commit_log"]}
-```
-
-**Líneas modificadas por commit y autor:**
-```
-{git_stats["numstat"]}
-```
-
-**Diff total en {tp_dir}:**
-```
-{git_stats["diff_stat"]}
-```
-
-**Mensajes completos de commits (para detectar Co-authored-by):**
-```
-{coauthors_trimmed}
-```
-
----
-
-## REPORTE DE CALIDAD AUTOMATIZADO (formato y análisis estático)
-
-{quality_section}
-
----
-
-{output_template}"""
+    return f"{system}\n\n---\n\n{data_section}\n\n---\n\n{output_template}"
 
 
 # ---------------------------------------------------------------------------
