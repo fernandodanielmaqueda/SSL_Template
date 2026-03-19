@@ -263,8 +263,27 @@ def collect_git_stats(base_sha: str, head_sha: str, tp_dir: str,
 # ---------------------------------------------------------------------------
 # Construcción del prompt
 # ---------------------------------------------------------------------------
+PROMPTS_DIR = Path(".github/prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    path = PROMPTS_DIR / filename
+    try:
+        return path.read_text(errors="replace")
+    except FileNotFoundError:
+        print(f"❌ Archivo de prompt no encontrado: {path}")
+        sys.exit(1)
+
+
 def build_prompt(tp_dir: str, rubric: str, source_files: dict,
                  readme: str, git_stats: dict, quality_report: str = "") -> str:
+
+    system = _load_prompt("system.md").replace("{tp_dir}", tp_dir)
+    output_template = (
+        _load_prompt("output_template.md")
+        .replace("{tp_dir}", tp_dir)
+        .replace("{MODEL}", MODEL)
+    )
 
     # Sección de archivos fuente
     sources_md = ""
@@ -284,30 +303,7 @@ def build_prompt(tp_dir: str, rubric: str, source_files: dict,
         "*(No disponible — el job de calidad no generó reporte o no se ejecutó)*"
     )
 
-    return f"""Sos un docente universitario de la materia "Sintaxis y Semántica de los Lenguajes" (SSL) de UTN-FRBA.
-Tu tarea es revisar la entrega grupal de {tp_dir} y escribir una **devolución para los estudiantes** como comentario en su Pull Request de GitHub.
-
-Tono y estilo de la devolución:
-- Hablales directamente a los estudiantes en segunda persona del plural (ustedes / el grupo).
-- Empezá reconociendo lo que está bien hecho antes de señalar lo que falta o puede mejorar.
-- Usá un lenguaje constructivo: "una oportunidad de mejora sería...", "podrían considerar...", "vale la pena revisar...".
-- Evitá un tono fiscalizador o burocrático. El objetivo es que el grupo aprenda, no que se sienta juzgado.
-- Sé concreto pero conciso: no hace falta escribir párrafos extensos.
-- El cierre debe ser alentador, reconociendo el esfuerzo del grupo.
-- Escribí de forma natural, como lo haría un docente real. Evitá frases que suenen formulaicas o automatizadas.
-- No uses el guión largo (—); reemplazalo por una coma, dos puntos, punto y coma o paréntesis según corresponda.
-
-Jerarquía de criterios en la rúbrica — es FUNDAMENTAL que la decisión global respete esto:
-- **[OBLIGATORIO — crítico]**: Son condiciones sine qua non. Si cualquiera de estos no se cumple, la entrega es ❌ Desaprobada, sin excepción. Señalalo claramente pero sin dramatismo.
-- **[OBLIGATORIO]**: Requisitos del enunciado. El incumplimiento de varios de estos también lleva a ❌ Desaprobado. Uno solo con desvío menor puede ameritar ⚠️ Requiere revisión docente.
-- **[Buenas prácticas]**: Son deseables y enriquecen la entrega, pero **no determinan la aprobación**. Mencionálas como oportunidades de mejora, no como déficits. Una entrega puede estar ✅ Aprobada aunque alguna buena práctica no esté perfectamente implementada.
-- **README.md**: Importante pero secundario. Su ausencia o incompletitud no desaprueba por sí sola; sí merece una mención constructiva.
-
-Formato:
-- Markdown compatible con GitHub (se renderiza en la interfaz del PR).
-- Tablas Markdown (`| col | col |`) para información tabular.
-- Encabezados `##`, `###` para estructurar secciones.
-- **Negrita**, `código inline` y bloques de código donde corresponda.
+    return f"""{system}
 
 ---
 
@@ -366,74 +362,7 @@ Formato:
 
 ---
 
-## INSTRUCCIONES DE SALIDA
-
-Generá el comentario completo de PR siguiendo **exactamente** la estructura y el formato indicados abajo.
-Respondé **únicamente** con el contenido Markdown del comentario, sin ningún texto antes ni después.
-
----
-
-## Revisión — {tp_dir}
-
-> 🤖 Revisión automática con `{MODEL}` | Tests: ✅ Pasaron
-
-[Párrafo de apertura breve y cercano: saludá al grupo, mencioná el TP y destacá algo positivo general de la entrega antes de entrar en detalle. 2-3 oraciones.]
-
----
-
-### Resultado: [reemplazar con ✅ Aprobado | ❌ Desaprobado | ⚠️ Para revisión docente]
-
-[2-3 oraciones explicando la decisión. Si es positivo, resaltá los puntos fuertes. Si hay problemas, mencioná cuáles son los más relevantes sin ser alarmista.]
-
----
-
-### Evaluación de rúbrica
-
-| # | Criterio | Peso | Estado | Comentario |
-|---|---|---|---|---|
-| [N] | [nombre del criterio] | [🔴 Crítico / 🟠 Obligatorio / 🟢 Buena práctica] | [✅ Cumple / ⚠️ Cumple parcialmente / ❌ No cumple] | [observación breve y constructiva; si aplica, mencioná archivo:línea] |
-
-*(una fila por cada criterio — cubrí TODOS; el Peso debe reflejar exactamente la etiqueta de la rúbrica)*
-
----
-
-### Oportunidades de mejora en el código
-
-| Tipo | Archivo | Línea | Observación | Sugerencia |
-|---|---|---|---|---|
-| [🐛 Bug / ⚡ Performance / 🔧 Mantenibilidad / 📐 Buenas prácticas / 💡 Sugerencia] | [archivo] | [N] | [qué se observa] | [cómo podría mejorarse] |
-
-*(Si el código está bien, escribir una fila indicando "Sin observaciones significativas.")*
-
----
-
-### Trabajo en equipo
-
-**Participación por integrante:**
-
-| Integrante | Commits | Líneas +/- | Último commit | Participación |
-|---|---|---|---|---|
-| [nombre] | [N] | [+X / -Y] | [fecha] | [✅ Activa / ⚠️ Baja / ❌ Sin commits] |
-
-**Calidad de los commits:**
-
-| SHA | Autor | Archivos | Líneas +/- | Mensaje | Atómico | Descripción |
-|---|---|---|---|---|---|---|
-| `[sha]` | [autor] | [N] | [+X / -Y] | [mensaje] | [✅ Sí / ⚠️ Parcial / ❌ No] | [✅ Clara / ⚠️ Mejorable / ❌ Genérica] |
-
-*(máximo 20 commits. Tomá los valores de archivos y líneas +/- directamente del detalle de commits provisto arriba. "Atómico" = el commit tiene un propósito único y cohesivo. "Descripción" = el mensaje transmite claramente qué se hizo y por qué.)*
-
-**Análisis del equipo:**
-
-[Párrafo que cubra: distribución del trabajo entre integrantes, patrón temporal (gradual vs. todo al final), uso de Co-authored-by, y calidad general del historial de commits. Sobre los commits específicamente: ¿los mensajes son descriptivos o genéricos ("fix", "wip", "cambios")? ¿hay commits que agrupan demasiados cambios no relacionados? Si aplica, mencioná como buena práctica que cada commit debería representar un cambio cohesivo con un mensaje que explique el "qué" y el "por qué". Tono constructivo, no acusatorio.]
-
----
-
-[Cierre alentador de 2-3 oraciones: reconocé el esfuerzo del grupo, mencioná lo que pueden llevarse de aprendizaje de esta entrega. Evitá frases genéricas; que se sienta genuino.]
-
----
-*Revisión automática orientativa — la decisión final es del docente.*
-"""
+{output_template}"""
 
 
 # ---------------------------------------------------------------------------
