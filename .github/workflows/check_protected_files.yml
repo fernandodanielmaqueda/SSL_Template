@@ -1,0 +1,59 @@
+name: Archivos protegidos
+
+# Corre en todo PR a main. Falla si el PR toca archivos del pipeline
+# (workflows, scripts, rúbricas, prompts, configuración).
+# Debe estar marcado como "required check" en branch protection.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check:
+    name: Verificar archivos del pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Detectar cambios en archivos protegidos
+      run: |
+        PROTECTED=(
+          ".github/workflows/"
+          ".github/scripts/"
+          ".github/rubrics/"
+          ".github/prompts/"
+          ".github/config/"
+          ".github/CODEOWNERS"
+          ".github/PULL_REQUEST_TEMPLATE.md"
+          ".clang-format"
+          ".pre-commit-config.yaml"
+        )
+
+        CHANGED=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+        echo "Archivos modificados en este PR:"
+        echo "$CHANGED"
+        echo ""
+
+        VIOLATIONS=""
+        for pattern in "${PROTECTED[@]}"; do
+          MATCHES=$(echo "$CHANGED" | grep "^${pattern}" || true)
+          if [ -n "$MATCHES" ]; then
+            VIOLATIONS="${VIOLATIONS}${MATCHES}"$'\n'
+          fi
+        done
+
+        if [ -n "$VIOLATIONS" ]; then
+          echo "❌ Este PR modifica archivos del pipeline que son mantenidos por los docentes:"
+          echo ""
+          echo "$VIOLATIONS"
+          echo "Por favor, revertí esos cambios antes de volver a pushear."
+          echo "Si creés que es un error, contactá al docente."
+          exit 1
+        fi
+
+        echo "✅ No se modificaron archivos protegidos."
