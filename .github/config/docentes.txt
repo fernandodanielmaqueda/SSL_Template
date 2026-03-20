@@ -1,10 +1,14 @@
 # GitHub usernames de docentes — excluidos del análisis de colaboración en PRs.
 # Una entrada por línea. Se compara contra nombre y email del autor del commit.
-SantiBoero1
+santiagoferreiros
 christianwes
-jfloresmaquera
 lucasmaksymon
+SantiBoero1
+jfloresmaquera
 ignaciocrusoe
 fernandodanielmaqueda
-MorosiniP
 leocantero
+leojviegas
+belenbusca
+JulianT52
+dperalta86
